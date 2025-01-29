@@ -12,7 +12,7 @@ saloon = "Saloon"
 saloonPossibilities = ["Private Transfer"]
 
 folder_path = "input"  # Replace with your input folder path
-output_folder =  "output/" # Replace with your output folder path
+output_folder =  "output" # Replace with your output folder path
 processed_folder = "processed" # Replace with your processed folder path
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
