@@ -11,9 +11,9 @@ sixSeaterPossibilities = ["Private Minivan", "Private Minivan (1-6)", "minivan"]
 saloon = "Saloon"
 saloonPossibilities = ["Private Transfer"]
 
-folder_path = "xml_to_csv/input"  # Replace with your input folder path
-output_folder =  "xml_to_csv/output/" # Replace with your output folder path
-processed_folder = "xml_to_csv/processed" # Replace with your processed folder path
+folder_path = "input"  # Replace with your input folder path
+output_folder =  "output/" # Replace with your output folder path
+processed_folder = "processed" # Replace with your processed folder path
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
 
