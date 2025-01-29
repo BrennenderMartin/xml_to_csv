@@ -1,3 +1,4 @@
 pandas
 customtkinter
 Pillow
+tkinterdnd2
