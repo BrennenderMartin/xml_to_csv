@@ -18,7 +18,7 @@ class DragDropApp(TkinterDnD.Tk):
         # Create a CTkButton inside the frame
         self.drop_button = ctk.CTkButton(
             self.drop_frame,
-            text="Drop Files Here",
+            text="Drop Files Here, click to convert them to csv",
             command=self.on_button_click
         )
         self.drop_button.pack(fill="both", expand=True)
