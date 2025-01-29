@@ -1,0 +1,32 @@
+parent;tag;text;attributes
+booking;reference;SUNTR_QX2840;{}
+booking;agency_name;WEBY Ltd - EUR;{}
+customer;name;frederique;{}
+customer;surname;furnee;{}
+lead_passenger;name;frederique;{}
+lead_passenger;surname;furnee;{}
+lead_passenger;mobile;+31641163345;{}
+transfer;transfer_document;SUNTR_QX2840/1;{}
+transfer;transfer_rate;49.25;{}
+vehicle;code;mv6;{}
+vehicle;title;Private Minivan;{}
+vehicle;max_passengers;6;{}
+vehicle;type;minivan;{}
+passengers;total_passengers;3;{}
+passengers;number_children;0;{}
+passengers;number_babies;0;{}
+origin;id;12818;{}
+origin;name;Dublin airport;{}
+origin;pickup_time;2025-01-26 16:10:00;{}
+flight;airline;ryanair;{}
+flight;flight_number;95;{}
+flight;date;2025-01-26 16:10:00;{}
+flight;origin_airport;Dublin airport (DUB);{}
+accommodation;name;St Jamess Hospital;{}
+accommodation;address;James St, Saint James (part of Phoenix Park), Dublin 8, D08 NHY1, Ireland;{}
+accommodation;pickup_name;St Jamess Hospital;{}
+accommodation;pickup_address;James St, Saint James (part of Phoenix Park), Dublin 8, D08 NHY1, Ireland;{}
+destination;id;20822;{}
+destination;name;Kilmainham;{}
+transfer;status;CREATED;{}
+transfer;creation_date;2025-01-24 21:59:02;{}

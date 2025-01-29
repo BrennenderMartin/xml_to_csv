@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booking>
+  <reference>SUNTR_QX5060</reference>
+  <agency_name/>
+  <customer>
+    <name><![CDATA[René]]></name>
+    <surname><![CDATA[Krayss]]></surname>
+  </customer>
+  <lead_passenger>
+    <name><![CDATA[René]]></name>
+    <surname><![CDATA[Krayss]]></surname>
+    <email><![CDATA[]]></email>
+    <mobile><![CDATA[+41 792908253]]></mobile>
+  </lead_passenger>
+  <transfers>
+    <transfer>
+      <transfer_document>SUNTR_QX5060/1</transfer_document>
+      <transfer_rate>46</transfer_rate>
+      <vehicle>
+        <code>mv6</code>
+        <title><![CDATA[Private Minivan]]></title>
+        <max_passengers>6</max_passengers>
+        <type>minivan</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>6</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <pickup_time>2025-10-03 12:10:00</pickup_time>
+        <flight>
+          <airline><![CDATA[SWISS (LX)]]></airline>
+          <flight_number>LX400</flight_number>
+          <date>2025-10-03 12:10:00</date>
+          <origin_airport><![CDATA[Flughafen Zürich (ZRH)]]></origin_airport>
+        </flight>
+      </origin>
+      <destination type="city">
+        <accommodation>
+          <name><![CDATA[]]></name>
+          <address><![CDATA[Temple Bar Hotel 13-17 FLEET STREET]]></address>
+          <pickup_name><![CDATA[]]></pickup_name>
+          <pickup_address><![CDATA[Temple Bar Hotel 13-17 FLEET STREET]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-01-27 13:25:07</creation_date>
+    </transfer>
+  </transfers>
+</booking>

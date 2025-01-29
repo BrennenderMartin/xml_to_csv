@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<booking>
+    <bookingNumber>1755565</bookingNumber>
+    <orderId>1978213</orderId>
+    <status>confirmed</status>
+    <pickupDate>2025-01-31 12:30:00.0</pickupDate>
+    <price>48.13</price>
+    <passengerInformation>
+        <commentary></commentary>
+        <name>PATRICIA MARTI</name>
+        <phone>(+34) 602226620</phone>
+    </passengerInformation>
+    <transportDetails>
+        <adults>3</adults>
+        <childs>2</childs>
+        <includedLuggage>6</includedLuggage>
+        <infants>0</infants>
+        <vehicleType>Private Minivan (1-6)</vehicleType>
+    </transportDetails>
+    <extraInformation/>
+    <originDetails>
+        <internalName>Dublin Airport (DUB)</internalName>
+        <name>Aeropuerto de Dublín (DUB) (AIRPORT)</name>
+        <transportDate>2025-01-31 12:30:00.0</transportDate>
+        <transportLine>RYANAIR</transportLine>
+        <transportNumber>FR1739</transportNumber>
+    </originDetails>
+    <destinationDetails>
+        <internalName>Dublin</internalName>
+        <name>The Morrison Dublin, Curio Collection by Hilton, Ormond Quay Lower, North City, Dublín, Irlanda</name>
+        <transportDate>2025-01-31 12:30:00.0</transportDate>
+        <transportLine></transportLine>
+        <transportNumber></transportNumber>
+    </destinationDetails>
+</booking>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Library>
+    <Book id="1">
+        <Title>Python Programming</Title>
+        <Author>John Doe</Author>
+        <Year>2020</Year>
+        <Genre>Programming</Genre>
+    </Book>
+    <Book id="2">
+        <Title>Machine Learning Basics</Title>
+        <Author>Jane Smith</Author>
+        <Year>2021</Year>
+        <Genre>AI</Genre>
+    </Book>
+    <Book id="3">
+        <Title>Data Science with Python</Title>
+        <Author>Mike Johnson</Author>
+        <Year>2019</Year>
+        <Genre>Data Science</Genre>
+    </Book>
+    <Magazine id="1">
+        <Title>Tech World</Title>
+        <Issue>45</Issue>
+        <Month>January</Month>
+        <Year>2023</Year>
+    </Magazine>
+</Library>
