@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinterdnd2 import TkinterDnD, DND_FILES
 import shutil
-
+import main
 
 class DragDropApp(TkinterDnD.Tk):
     def __init__(self):
@@ -28,7 +28,9 @@ class DragDropApp(TkinterDnD.Tk):
         self.drop_frame.dnd_bind("<<Drop>>", self.on_file_drop)
 
     def on_button_click(self):
-        print("Button clicked!")
+        print("Action start:")
+        main.main()
+        print("Action end.")
 
     def on_file_drop(self, event):
         file_paths = event.data.split()  # File paths separated by spaces

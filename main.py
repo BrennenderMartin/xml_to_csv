@@ -227,45 +227,46 @@ def create_csv_default(mapping, file_name, root, data):
     df = pd.DataFrame(data, dtype=object)
     df.to_csv(file_name, sep=";", index=False, quoting=3)
 
-# Initialize the shared dataset
-data = []
+def main():
+    # Initialize the shared dataset
+    data = []
 
-# Create the output folder with the current date
-date = datetime.now().strftime(date_format)
-final_folder = os.path.join(processed_folder, date)
-os.makedirs(final_folder, exist_ok=True)
+    # Create the output folder with the current date
+    date = datetime.now().strftime(date_format)
+    final_folder = os.path.join(processed_folder, date)
+    os.makedirs(final_folder, exist_ok=True)
 
-if not os.listdir(folder_path):
-    print("There are no xml files to be processed")
-else:    
-    # Iterate over all files in the folder
-    for file_name in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, file_name)
-    
-        # Check if it's an XML file
-        if not file_name.endswith(".xml"):
-            print(f"Skipping non-XML file: {file_name}")
-            continue
-
-        print(f"\nProcessing file: {file_name}")
-
-        # Parse the XML file
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-
-        # Determine the mapping based on the reference
-        reference = root.find("reference")
-        if reference is not None and "SUNTR" in reference.text:
-            print(f"The reference contains SUNTR in {file_name}.")
-            create_csv_SUNTR(mapping_SUNTR, f"{output_folder}/output_{date}.csv", root, data)
-        else:
-            print(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
-            create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)
-
-        # Extract data and append it as a new row
+    if not os.listdir(folder_path):
+        print("There are no xml files to be processed")
+    else:    
+        # Iterate over all files in the folder
+        for file_name in os.listdir(folder_path):
+            file_path = os.path.join(folder_path, file_name)
         
-        
-        # Move the processed XML file to the date-named folder
-        new_file_path = os.path.join(final_folder, file_name)
-        shutil.move(file_path, new_file_path)
-        print(f"Moved file to: {new_file_path}")
+            # Check if it's an XML file
+            if not file_name.endswith(".xml"):
+                print(f"Skipping non-XML file: {file_name}")
+                continue
+
+            print(f"\nProcessing file: {file_name}")
+
+            # Parse the XML file
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+
+            # Determine the mapping based on the reference
+            reference = root.find("reference")
+            if reference is not None and "SUNTR" in reference.text:
+                print(f"The reference contains SUNTR in {file_name}.")
+                create_csv_SUNTR(mapping_SUNTR, f"{output_folder}/output_{date}.csv", root, data)
+            else:
+                print(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
+                create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)
+
+            # Extract data and append it as a new row
+            
+            
+            # Move the processed XML file to the date-named folder
+            new_file_path = os.path.join(final_folder, file_name)
+            shutil.move(file_path, new_file_path)
+            print(f"Moved file to: {new_file_path}")
