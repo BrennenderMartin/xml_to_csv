@@ -1,10 +1,12 @@
 import customtkinter as ctk
 from tkinterdnd2 import TkinterDnD, DND_FILES
+from tkinter import filedialog
 import shutil
 import os
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import pandas as pd
+
 
 """Global variables:"""
 sixSeater = "6 Seater"
@@ -274,7 +276,7 @@ def main():
             shutil.move(file_path, new_file_path)
             print(f"Moved file to: {new_file_path}")
 
-class DragDropApp(TkinterDnD.Tk):
+class DragDropApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
@@ -282,22 +284,35 @@ class DragDropApp(TkinterDnD.Tk):
         self.title("Drag-and-Drop Button Example")
         self.geometry("400x200")
 
-        # Create a frame for drag-and-drop
-        self.drop_frame = ctk.CTkFrame(self, width=300, height=100)
-        self.drop_frame.pack(pady=50, padx=50)
+        # Create a frame for file selection
+        self.select_frame = ctk.CTkFrame(self, width=300, height=100)
+        self.select_frame.pack(pady=50, padx=50)
 
-        # Create a CTkButton inside the frame
-        self.drop_button = ctk.CTkButton(
-            self.drop_frame,
-            text="Drop Files Here, click to convert them to csv",
-            command=self.on_button_click
+        # Create a CTkButton for selecting files
+        self.select_button = ctk.CTkButton(
+            self.select_frame,
+            text="Select Files",
+            command=self.select_files
         )
-        self.drop_button.pack(fill="both", expand=True)
+        #self.select_button.pack(fill="both", expand=True)
+        self.select_button.grid(column=0,row=0, padx=5, pady=5)
+        
+        self.action_button = ctk.CTkButton(self.select_frame, text="Action", command=self.on_button_click)
+        self.action_button.grid(column=0,row=1, padx=5, pady=5)
 
-        # Enable drag-and-drop for the frame
-        self.drop_frame.drop_target_register(DND_FILES)
-        self.drop_frame.dnd_bind("<<Drop>>", self.on_file_drop)
-
+    def select_files(self):
+        # Open file dialog to select files
+        file_paths = filedialog.askopenfilenames(
+            title="Select Files",
+            filetypes=(("All Files", "*.*"),)
+        )
+        
+        if file_paths:
+            for file_path in file_paths:
+                print(f"File selected: {file_path}")
+                shutil.copy(file_path, folder_path)
+            print("All files have been moved successfully.")
+    
     def on_button_click(self):
         print("Action start:")
         main()
@@ -311,9 +326,9 @@ class DragDropApp(TkinterDnD.Tk):
 
 if __name__ == "__main__":
     os.makedirs(main_folder, exist_ok=True)
-    os.makedirs(f"{folder_path}")
-    os.makedirs(f"{output_folder}")
-    os.makedirs(f"{processed_folder}")
+    os.makedirs(f"{folder_path}", exist_ok=True)
+    os.makedirs(f"{output_folder}", exist_ok=True)
+    os.makedirs(f"{processed_folder}", exist_ok=True)
     #shutil.copy("complete.py", main_folder)
     app = DragDropApp()
     app.mainloop()

@@ -2,6 +2,8 @@ import customtkinter as ctk
 from tkinterdnd2 import TkinterDnD, DND_FILES
 import shutil
 
+main_folder = "main"
+folder_path = f"{main_folder}/input" 
 
 class DragDropApp(TkinterDnD.Tk):
     def __init__(self):
@@ -18,7 +20,7 @@ class DragDropApp(TkinterDnD.Tk):
         # Create a CTkButton inside the frame
         self.drop_button = ctk.CTkButton(
             self.drop_frame,
-            text="Drop Files Here",
+            text="Drop Files Here, click to convert them to csv",
             command=self.on_button_click
         )
         self.drop_button.pack(fill="both", expand=True)
@@ -28,14 +30,15 @@ class DragDropApp(TkinterDnD.Tk):
         self.drop_frame.dnd_bind("<<Drop>>", self.on_file_drop)
 
     def on_button_click(self):
-        print("Button clicked!")
+        print("Action start:")
+        #main()
+        print("Action end.")
 
     def on_file_drop(self, event):
         file_paths = event.data.split()  # File paths separated by spaces
         for file_path in file_paths:
             print(f"File dropped: {file_path}")
-            shutil.move(file_path, 'input')
-
+            shutil.move(file_path, folder_path)
 
 if __name__ == "__main__":
     app = DragDropApp()

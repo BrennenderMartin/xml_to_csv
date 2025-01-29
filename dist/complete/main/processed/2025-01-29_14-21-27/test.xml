@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booking>
+  <reference>SUNTR_QX2840</reference>
+  <agency_name>WEBY Ltd - EUR</agency_name>
+  <customer>
+    <name><![CDATA[frederique]]></name>
+    <surname><![CDATA[furnee]]></surname>
+  </customer>
+  <lead_passenger>
+    <name><![CDATA[frederique]]></name>
+    <surname><![CDATA[furnee]]></surname>
+    <email><![CDATA[]]></email>
+    <mobile><![CDATA[+31641163345]]></mobile>
+  </lead_passenger>
+  <transfers>
+    <transfer>
+      <transfer_document>SUNTR_QX2840/1</transfer_document>
+      <transfer_rate>49.25</transfer_rate>
+      <vehicle>
+        <code>mv6</code>
+        <title><![CDATA[Private Minivan]]></title>
+        <max_passengers>6</max_passengers>
+        <type>minivan</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>3</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <pickup_time>2025-01-26 16:10:00</pickup_time>
+        <flight>
+          <airline><![CDATA[ryanair]]></airline>
+          <flight_number>95</flight_number>
+          <date>2025-01-26 16:10:00</date>
+          <origin_airport><![CDATA[Dublin airport (DUB)]]></origin_airport>
+        </flight>
+      </origin>
+      <destination type="city">
+        <accommodation>
+          <name><![CDATA[St Jamess Hospital]]></name>
+          <address><![CDATA[James St, Saint James (part of Phoenix Park), Dublin 8, D08 NHY1, Ireland]]></address>
+          <pickup_name><![CDATA[St Jamess Hospital]]></pickup_name>
+          <pickup_address><![CDATA[James St, Saint James (part of Phoenix Park), Dublin 8, D08 NHY1, Ireland]]></pickup_address>
+        </accommodation>
+        <id>20822</id>
+        <name><![CDATA[Kilmainham]]></name>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-01-24 21:59:02</creation_date>
+    </transfer>
+  </transfers>
+</booking>
