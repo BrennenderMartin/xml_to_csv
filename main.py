@@ -252,9 +252,6 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 elif key == "ref_number":
                     entry += appendix_ref_number
                 
-                elif key == "source_name":
-                    entry = "Sun Transfers"
-                
                 row[key] = entry
 
         data.append(row)
