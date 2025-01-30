@@ -21,7 +21,7 @@ output_folder =  f"{main_folder}/output" # Replace with your output folder path
 processed_folder = f"{main_folder}/processed" # Replace with your processed folder path
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
-
+#source
 mapping_SUNTR ={"pickup_time": "transfers/transfer/origin/pickup_time",
                 "pickup_address": "",
                 "pickup_address_complete": "",
@@ -185,6 +185,9 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 else:
                     row[key] = ""
             
+            
+
+            
             else:
                 # Default behavior for other keys
                 if "transfers/transfer/" in value:  # Adjust paths to be relative to the <transfer>
@@ -192,13 +195,17 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 else:
                     entry = get_item(value, root)
 
-                # Adjust vehicle type name
+                # Adjust entry names
                 if key == "vehicle_type_name" and entry in sixSeaterPossibilities:
                     entry = sixSeater
                 elif key == "vehicle_type_name" and entry in saloonPossibilities:
                     entry = saloon
+                
                 elif key == "ref_number":
                     entry += appendix_ref_number
+                
+                elif key == "source_name":
+                    entry = "Sun Transfers"
                 row[key] = entry
 
         # Append the row for this transfer

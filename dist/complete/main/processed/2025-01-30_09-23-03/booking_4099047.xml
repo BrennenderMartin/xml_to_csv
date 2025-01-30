@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booking>
+  <reference>SUNTR_QX9047</reference>
+  <agency_name/>
+  <customer>
+    <name><![CDATA[Rune]]></name>
+    <surname><![CDATA[Ulset]]></surname>
+  </customer>
+  <lead_passenger>
+    <name><![CDATA[Rune]]></name>
+    <surname><![CDATA[Ulset]]></surname>
+    <email><![CDATA[]]></email>
+    <mobile><![CDATA[+47 90687981]]></mobile>
+  </lead_passenger>
+  <transfers>
+    <transfer>
+      <transfer_document>SUNTR_QX9047/1</transfer_document>
+      <transfer_rate>46</transfer_rate>
+      <vehicle>
+        <code>mv6</code>
+        <title><![CDATA[Private Minivan]]></title>
+        <max_passengers>6</max_passengers>
+        <type>minivan</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>6</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <pickup_time>2025-02-20 12:15:00</pickup_time>
+        <flight>
+          <airline><![CDATA[SAS (SK)]]></airline>
+          <flight_number>SK4603</flight_number>
+          <date>2025-02-20 12:15:00</date>
+          <origin_airport><![CDATA[Oslo Airport Gardermoen (OSL)]]></origin_airport>
+        </flight>
+      </origin>
+      <destination type="city">
+        <accommodation>
+          <name><![CDATA[Leonardo Hotel Dublin Christchurch]]></name>
+          <address><![CDATA[8 Christchurch Place Dublin D08 REK7]]></address>
+          <pickup_name><![CDATA[Leonardo Hotel Dublin Christchurch]]></pickup_name>
+          <pickup_address><![CDATA[8 Christchurch Place Dublin D08 REK7]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-01-29 20:41:10</creation_date>
+    </transfer>
+    <transfer>
+      <transfer_document>SUNTR_QX9047/2</transfer_document>
+      <transfer_rate>46</transfer_rate>
+      <vehicle>
+        <code>mv6</code>
+        <title><![CDATA[Private Minivan]]></title>
+        <max_passengers>6</max_passengers>
+        <type>minivan</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>6</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="city">
+        <accommodation>
+          <name><![CDATA[Leonardo Hotel Dublin Christchurch]]></name>
+          <address><![CDATA[8 Christchurch Place Dublin D08 REK7]]></address>
+          <pickup_name><![CDATA[Leonardo Hotel Dublin Christchurch]]></pickup_name>
+          <pickup_address><![CDATA[8 Christchurch Place Dublin D08 REK7]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+        <pickup_time>2025-02-23 10:35:00</pickup_time>
+      </origin>
+      <destination type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <flight>
+          <airline><![CDATA[SAS (SK)]]></airline>
+          <flight_number>NOT_NEEDED</flight_number>
+          <date>2025-02-23 13:00:00</date>
+        </flight>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-01-29 20:41:10</creation_date>
+    </transfer>
+  </transfers>
+</booking>
