@@ -209,6 +209,30 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                     row[key] = get_item("accommodation/address", transfer.find("destination"))
                 else:
                     row[key] = ""
+
+            elif key == "booster_seat_count":
+                extras = transfer.find("extras")
+                booster_seat_count = 0
+                if extras is not None:
+                    for extra in extras.findall("extra"):
+                        name_element = extra.find("name")
+                        if name_element is not None and "Child booster seat (2+ years)" in name_element.text:
+                            quantity_element = extra.find("quantity")
+                            if quantity_element is not None and quantity_element.text.isdigit():
+                                booster_seat_count += int(quantity_element.text)
+                row[key] = str(booster_seat_count)
+
+            elif key == "infant_seat_count":
+                extras = transfer.find("extras")
+                infant_seat_count = 0
+                if extras is not None:
+                    for extra in extras.findall("extra"):
+                        name_element = extra.find("name")
+                        if name_element is not None and "Baby Seat (6 - 24 months)" in name_element.text:
+                            quantity_element = extra.find("quantity")
+                            if quantity_element is not None and quantity_element.text.isdigit():
+                                infant_seat_count += int(quantity_element.text)
+                row[key] = str(infant_seat_count)
             
             else:
                 # Default behavior for other keys

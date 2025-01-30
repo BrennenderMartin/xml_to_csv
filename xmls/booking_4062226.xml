@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booking>
+  <reference>SUNTR_QU2226</reference>
+  <agency_name>WEBY Ltd - EUR</agency_name>
+  <customer>
+    <name><![CDATA[Keith]]></name>
+    <surname><![CDATA[Murphy]]></surname>
+  </customer>
+  <lead_passenger>
+    <name><![CDATA[Keith]]></name>
+    <surname><![CDATA[Murphy]]></surname>
+    <email><![CDATA[]]></email>
+    <mobile><![CDATA[+14169497836]]></mobile>
+  </lead_passenger>
+  <transfers>
+    <transfer>
+      <transfer_document>SUNTR_QU2226/1</transfer_document>
+      <transfer_rate>77.6</transfer_rate>
+      <vehicle>
+        <code>mv6</code>
+        <title><![CDATA[Private Minivan]]></title>
+        <max_passengers>6</max_passengers>
+        <type>minivan</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>4</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="city">
+        <accommodation>
+          <name><![CDATA[13 The Walk]]></name>
+          <address><![CDATA[13 The Walk, Woodpark, Dublin 16, D16 CF30, Ireland]]></address>
+          <pickup_name><![CDATA[13 The Walk]]></pickup_name>
+          <pickup_address><![CDATA[13 The Walk, Woodpark, Dublin 16, D16 CF30, Ireland]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+        <pickup_time>2024-12-27 05:30:00</pickup_time>
+      </origin>
+      <destination type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <flight>
+          <airline><![CDATA[AC801]]></airline>
+          <flight_number>AC801</flight_number>
+          <date/>
+        </flight>
+      </destination>
+      <extras>
+        <extra>
+          <name><![CDATA[Baby Seat (6 - 24 months)]]></name>
+          <quantity>1</quantity>
+          <rate>15</rate>
+        </extra>
+        <extra>
+          <name><![CDATA[Child booster seat (2+ years)]]></name>
+          <quantity>1</quantity>
+          <rate>15</rate>
+        </extra>
+      </extras>
+      <status>CREATED</status>
+      <creation_date>2024-12-26 12:12:40</creation_date>
+    </transfer>
+  </transfers>
+</booking>
