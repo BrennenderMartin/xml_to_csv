@@ -1,5 +1,4 @@
 import customtkinter as ctk
-from tkinterdnd2 import TkinterDnD, DND_FILES
 from tkinter import filedialog
 import shutil
 import os
@@ -335,7 +334,7 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title("Convert xmls to csvs")
-        self.geometry("700x450")
+        self.geometry("750x300")
         
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -374,9 +373,9 @@ class App(ctk.CTk):
             text="Convert",
             fg_color="transparent",
             text_color=("gray10", "gray90"), 
-            hover_color=("gray70", "gray30"),
+            hover_color=("gray70", "gray20"),
             anchor="w", 
-            command=self.on_button_click
+            command=self.main_process
         )
         self.action_button.grid(row=2, column=0, sticky="ew")
         
@@ -388,11 +387,25 @@ class App(ctk.CTk):
             text="Open Output",
             fg_color="transparent",
             text_color=("gray10", "gray90"),
-            hover_color=("gray70", "gray30"),
+            hover_color=("gray70", "gray20"),
             anchor="w",
             command=self.open_output
         )
         self.output_button.grid(row=3, column=0, sticky="ew")
+        
+        self.remove_button = ctk.CTkButton(
+            self.navigation_frame,
+            corner_radius=0,
+            height=40,
+            border_spacing=10,
+            text="Remove",
+            fg_color="transparent",
+            text_color=("gray10", "gray90"),
+            hover_color=("gray70", "gray20"),
+            anchor="w",
+            command=self.remove
+        )
+        self.remove_button.grid(row=5, column=0, sticky="ew")
         
         self.appearance_mode_menu = ctk.CTkOptionMenu(
             self.navigation_frame, 
@@ -459,7 +472,7 @@ class App(ctk.CTk):
                 shutil.copy(file_path, folder_path)
             self.printing("All files have been moved successfully.")
     
-    def on_button_click(self):
+    def main_process(self):
         """
         Triggers the main processing function to convert XML files to CSV and update logs.
 
@@ -486,6 +499,31 @@ class App(ctk.CTk):
         except Exception as e:
             self.printing(f"Error opening output folder: {e}")
 
+    def remove(self):
+        """
+        Removes the most recently added file from the input folder.
+
+        Returns:
+            None
+        """
+        try:
+            # Get a list of all files in the input folder
+            files = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
+            
+            # Check if the folder is empty
+            if not files:
+                self.printing("The input folder is empty. No files to remove.")
+                return
+
+            # Find the most recently modified file
+            latest_file = max(files, key=os.path.getmtime)
+
+            # Delete the file
+            os.remove(latest_file)
+            self.printing(f"Removed the latest file: {os.path.basename(latest_file)}")
+        except Exception as e:
+            self.printing(f"Error removing the latest file: {e}")
+
     def show_intro(self):
         """
         Displays an introduction message in the application textbox, guiding the user
@@ -502,7 +540,8 @@ class App(ctk.CTk):
             "2. Click 'Convert' to process and extract data into CSV.\n"
             "3. The processed files will be saved in the 'output' folder, while the original XML files "
             "will be copied to the 'processed' folder and you can open the 'output' folder by clicking "
-            "on the 'OpenOutput' button.\n\n"
+            "on the 'OpenOutput' button.\n"
+            "4. Click 'Remove' to remove the latest file from the 'input' folder\n\n"
         )
         self.printing(intro_message)
 
