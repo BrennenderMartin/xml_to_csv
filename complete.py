@@ -19,9 +19,9 @@ saloon = "Saloon"
 saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)"]
 
 main_folder = "main"
-folder_path = f"{main_folder}\input"  # Replace with your input folder path
-output_folder =  f"{main_folder}\output" # Replace with your output folder path
-processed_folder = f"{main_folder}\processed" # Replace with your processed folder path
+folder_path = f"{main_folder}\input"
+output_folder =  f"{main_folder}\output"
+processed_folder = f"{main_folder}\processed"
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
 
@@ -312,8 +312,12 @@ class App(ctk.CTk):
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(4, weight=1)
         
-        self.navigation_frame_label = ctk.CTkLabel(self.navigation_frame, text="Image Example", 
-                                                    compound="left", font=ctk.CTkFont(size=15, weight="bold"))
+        self.navigation_frame_label = ctk.CTkLabel(
+            self.navigation_frame, 
+            text="Image Example", 
+            compound="left", 
+            font=ctk.CTkFont(size=15, weight="bold")
+        )
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
         
         self.select_button = ctk.CTkButton(
@@ -344,6 +348,20 @@ class App(ctk.CTk):
         )
         self.action_button.grid(row=2, column=0, sticky="ew")
         
+        self.output_button = ctk.CTkButton(
+            self.navigation_frame,
+            corner_radius=0,
+            height=40,
+            border_spacing=10,
+            text="Open Output",
+            fg_color="transparent",
+            text_color=("gray10", "gray90"),
+            hover_color=("gray70", "gray30"),
+            anchor="w",
+            command=self.open_output
+        )
+        self.output_button.grid(row=3, column=0, sticky="ew")
+        
         self.appearance_mode_menu = ctk.CTkOptionMenu(
             self.navigation_frame, 
             values=["Light", "Dark", "System"],
@@ -359,8 +377,11 @@ class App(ctk.CTk):
         
         self.textbox = ctk.CTkTextbox(self.home_frame, corner_radius=0)
         self.textbox.grid(row=0, column=0, padx=20, pady=10, sticky="nsew")
+        #self.textbox.configure(state="disabled")
         
         self.select_frame_by_name("home")
+        
+        self.show_intro()
 
     def select_frame_by_name(self, name):
         # show selected frame
@@ -393,16 +414,35 @@ class App(ctk.CTk):
         main()
         self.printing("Action end.")
 
-    def on_file_drop(self, event):
-        file_paths = event.data.split()  # File paths separated by spaces
-        for file_path in file_paths:
-            self.printing(f"File dropped: {file_path}")
-            shutil.move(file_path, folder_path)
+    def open_output(self, event=None):
+        try:
+            if os.name == "nt":  # Windows
+                os.startfile(output_folder)
+        except Exception as e:
+            self.printing(f"Error opening output folder: {e}")
+
+    def show_intro(self):
+        """
+        Displays an introduction message in the CTkTextbox when the application starts.
+        """
+        intro_message = (
+            "Welcome to the XML to CSV Converter!\n\n"
+            "This program allows you to process XML files and convert them into structured CSV format.\n"
+            "Here's how to use it:\n\n"
+            "1. Click 'Select Files' to choose XML files.\n"
+            "2. Click 'Convert' to process and extract data into CSV.\n"
+            "3. The processed files will be saved in the 'output' folder, while the original XML files "
+            "will be copied to the 'processed' folder and you can open the 'output' folder by clicking "
+            "on the 'OpenOutput' button.\n\n"
+        )
+        self.printing(intro_message)
 
     def printing(self, text):
         print(text)
+        self.textbox.configure(state="normal")
         self.textbox.insert("end", f"{text}\n")
         self.textbox.see("end")
+        self.textbox.configure(state="disabled")
 
 if __name__ == "__main__":
     os.makedirs(main_folder, exist_ok=True)
