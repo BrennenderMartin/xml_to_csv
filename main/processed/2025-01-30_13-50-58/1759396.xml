@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<booking>
+    <bookingNumber>1759396</bookingNumber>
+    <orderId>1982052</orderId>
+    <status>confirmed</status>
+    <pickupDate>2025-01-30 18:35</pickupDate>
+    <price>38.5</price>
+    <passengerInformation>
+        <commentary></commentary>
+        <name>Barnaby Rugge-Price</name>
+        <phone>+44 7796135014</phone>
+    </passengerInformation>
+    <transportDetails>
+        <adults>1</adults>
+        <childs>0</childs>
+        <includedLuggage>3</includedLuggage>
+        <infants>0</infants>
+        <vehicleType>Private Sedan (1-4)</vehicleType>
+    </transportDetails>
+    <extraInformation/>
+    <originDetails>
+        <internalName>Dublin Airport (DUB)</internalName>
+        <name>Dublin Airport - Dublin Airport (DUB), Dublin, Ireland</name>
+        <transportDate>2025-01-30 18:35</transportDate>
+        <transportLine>Plane Arriving from London City Airport, Airline Name: British Airways</transportLine>
+        <transportNumber>BA4468</transportNumber>
+    </originDetails>
+    <destinationDetails>
+        <internalName>Dublin</internalName>
+        <name>Iveagh Garden Hotel - 72/74 Harcourt St, Saint Kevins, Dublin, Ireland</name>
+        <transportLine></transportLine>
+        <transportNumber></transportNumber>
+    </destinationDetails>
+</booking>

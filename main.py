@@ -79,7 +79,7 @@ mapping_SUNTR ={"pickup_time": "transfers/transfer/origin/pickup_time",
                 "custom_field_4": "",
                 "admin_note": "",
                 "ip_address": "",
-                "created_date": "transfers/transfer/creation_date"
+                "created_date": ""
 }
 
 mapping_default = { "pickup_time": "pickupDate",
