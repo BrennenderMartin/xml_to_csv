@@ -19,9 +19,9 @@ saloon = "Saloon"
 saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)"]
 
 main_folder = "main"
-folder_path = f"{main_folder}/input"  # Replace with your input folder path
-output_folder =  f"{main_folder}/output" # Replace with your output folder path
-processed_folder = f"{main_folder}/processed" # Replace with your processed folder path
+folder_path = f"{main_folder}\input"  # Replace with your input folder path
+output_folder =  f"{main_folder}\output" # Replace with your output folder path
+processed_folder = f"{main_folder}\processed" # Replace with your processed folder path
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
 
@@ -130,7 +130,7 @@ mapping_default = { "pickup_time": "pickupDate",
                     "custom_field_2": "",
                     "custom_field_3": "",
                     "custom_field_4": "",
-                    "admin_note": "",
+                    "admin_note": "commentary",
                     "ip_address": "",
                     "created_date": ""
 }
@@ -142,6 +142,14 @@ def get_item(path, root):
     Extracts the value from the XML path. Supports both single paths (string)
     and multiple paths (list).
     """
+    if path == "commentary":
+        # Collect all <commentary> elements from anywhere in the XML
+        commentary_list = [element.text.strip() for element in root.iter("commentary") if element.text]
+
+        # Join all found commentary entries into a single string
+        return "; ".join(commentary_list) if commentary_list else ""
+
+    
     if isinstance(path, str):
         element = root.find(path)
         if element is not None and element.text:
@@ -225,6 +233,7 @@ def create_csv_default(mapping, file_name, root, data):
     # Iterate over each transfer
     row = {}
     for key, value in mapping.items():
+        
         entry = get_item(value, root)
 
         # Adjust vehicle type name
@@ -234,9 +243,6 @@ def create_csv_default(mapping, file_name, root, data):
             entry = saloon
         elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
             entry = eightSeater
-        
-        elif key == "source_name":
-            entry = "Sun Transfers"
         
         row[key] = entry
 
@@ -345,31 +351,18 @@ class App(ctk.CTk):
         )
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
+        
         # create home frame
         self.home_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
-
-        self.home_frame_large_image_label = ctk.CTkLabel(self.home_frame, text="", image=self.large_test_image)
-        self.home_frame_large_image_label.grid(row=0, column=0, padx=20, pady=10)
-
-        self.home_frame_button_1 = ctk.CTkButton(self.home_frame, text="", image=self.image_icon_image)
-        self.home_frame_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.home_frame_button_2 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="right")
-        self.home_frame_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.home_frame_button_3 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="top")
-        self.home_frame_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.home_frame_button_4 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="bottom", anchor="w")
-        self.home_frame_button_4.grid(row=4, column=0, padx=20, pady=10)
+        self.home_frame.grid_rowconfigure(0, weight=1)
         
         self.textbox = ctk.CTkTextbox(self.home_frame, corner_radius=0)
-        self.textbox.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+        self.textbox.grid(row=0, column=0, padx=20, pady=10, sticky="nsew")
         
         self.select_frame_by_name("home")
 
     def select_frame_by_name(self, name):
-        # set button color for selected button
-        self.home_button.configure(fg_color=("gray75", "gray25") if name == "home" else "transparent")
-        
         # show selected frame
         if name == "home":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
@@ -407,6 +400,7 @@ class App(ctk.CTk):
             shutil.move(file_path, folder_path)
 
     def printing(self, text):
+        print(text)
         self.textbox.insert("end", f"{text}\n")
         self.textbox.see("end")
 
