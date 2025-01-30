@@ -55,9 +55,9 @@ mapping_SUNTR ={"pickup_time": "transfers/transfer/origin/pickup_time",
                 "passenger_count": "transfers/transfer/passengers/total_passengers",
                 "luggage_count": "",
                 "hand_luggage_count": "",
-                "child_seat_count": "transfers/transfer/passengers/number_children",
+                "child_seat_count": "",
                 "booster_seat_count": "",
-                "infant_seat_count": "transfers/transfer/passengers/number_babies",
+                "infant_seat_count": "",
                 "wheelchair_count": "",
                 "pickup_flight_number": "transfers/transfer/origin/flight/flight_number",
                 "pickup_flight_time": "",
@@ -110,9 +110,9 @@ mapping_default = { "pickup_time": "pickupDate",
                     "passenger_count": "transportDetails/adults",
                     "luggage_count": "transportDetails/includedLuggage",
                     "hand_luggage_count": "",
-                    "child_seat_count": "transportDetails/childs",
+                    "child_seat_count": "",
                     "booster_seat_count": "",
-                    "infant_seat_count": "transportDetails/infants",
+                    "infant_seat_count": "",
                     "wheelchair_count": "",
                     "pickup_flight_number": "originDetails/transportNumber",
                     "pickup_flight_time": "",
@@ -291,36 +291,97 @@ def main():
             shutil.move(file_path, new_file_path)
             app.printing(f"Moved file to: {new_file_path}")
 
-class DragDropApp(ctk.CTk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         # Set up the CTk window
-        self.title("Drag-and-Drop Button Example")
-        self.geometry("400x300")
+        self.title("Convert xmls to csvs")
+        self.geometry("700x450")
         
         self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-        # Create a frame for file selection
-        self.select_frame = ctk.CTkFrame(self, width=300)
-        self.select_frame.pack(pady=5, padx=5)
-
-        # Create a CTkButton for selecting files
+        self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
+        self.navigation_frame.grid(row=0, column=0, sticky="nsew")
+        self.navigation_frame.grid_rowconfigure(4, weight=1)
+        
+        self.navigation_frame_label = ctk.CTkLabel(self.navigation_frame, text="Image Example", 
+                                                    compound="left", font=ctk.CTkFont(size=15, weight="bold"))
+        self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
+        
         self.select_button = ctk.CTkButton(
-            self.select_frame,
+            self.navigation_frame,
+            corner_radius=0,
+            height=40,
+            border_spacing=10,
             text="Select Files",
+            fg_color="transparent",
+            text_color=("gray10", "gray90"),
+            hover_color=("gray70", "gray20"),
+            anchor="w",
             command=self.select_files
         )
-        #self.select_button.pack(fill="both", expand=True)
-        self.select_button.grid(column=0,row=0, padx=5, pady=5, sticky="nsew")
+        self.select_button.grid(row=1, column=0, sticky="ew")
         
-        self.action_button = ctk.CTkButton(self.select_frame, text="Action", command=self.on_button_click)
-        self.action_button.grid(column=0,row=1, padx=5, pady=5, sticky="nsew")
+        self.action_button = ctk.CTkButton(
+            self.navigation_frame, 
+            corner_radius=0,
+            height=40, 
+            border_spacing=10, 
+            text="Convert",
+            fg_color="transparent",
+            text_color=("gray10", "gray90"), 
+            hover_color=("gray70", "gray30"),
+            anchor="w", 
+            command=self.on_button_click
+        )
+        self.action_button.grid(row=2, column=0, sticky="ew")
         
-        self.textbox = ctk.CTkTextbox(self.select_frame, width=300, height=200, corner_radius=0)
-        self.textbox.grid(row=2, column=0, sticky="nsew")
+        self.appearance_mode_menu = ctk.CTkOptionMenu(
+            self.navigation_frame, 
+            values=["Light", "Dark", "System"],
+            command=self.change_appearance_mode_event
+        )
+        self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
+        # create home frame
+        self.home_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.home_frame.grid_columnconfigure(0, weight=1)
+
+        self.home_frame_large_image_label = ctk.CTkLabel(self.home_frame, text="", image=self.large_test_image)
+        self.home_frame_large_image_label.grid(row=0, column=0, padx=20, pady=10)
+
+        self.home_frame_button_1 = ctk.CTkButton(self.home_frame, text="", image=self.image_icon_image)
+        self.home_frame_button_1.grid(row=1, column=0, padx=20, pady=10)
+        self.home_frame_button_2 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="right")
+        self.home_frame_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.home_frame_button_3 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="top")
+        self.home_frame_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.home_frame_button_4 = ctk.CTkButton(self.home_frame, text="CTkButton", image=self.image_icon_image, compound="bottom", anchor="w")
+        self.home_frame_button_4.grid(row=4, column=0, padx=20, pady=10)
+        
+        self.textbox = ctk.CTkTextbox(self.home_frame, corner_radius=0)
+        self.textbox.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
+        
+        self.select_frame_by_name("home")
+
+    def select_frame_by_name(self, name):
+        # set button color for selected button
+        self.home_button.configure(fg_color=("gray75", "gray25") if name == "home" else "transparent")
+        
+        # show selected frame
+        if name == "home":
+            self.home_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.home_frame.grid_forget()
+    
+    def home_button_event(self):
+        self.select_frame_by_name("home")
+
+    def change_appearance_mode_event(self, new_appearance_mode):
+        ctk.set_appearance_mode(new_appearance_mode)
+    
     def select_files(self):
         # Open file dialog to select files
         file_paths = filedialog.askopenfilenames(
@@ -355,5 +416,5 @@ if __name__ == "__main__":
     os.makedirs(f"{output_folder}", exist_ok=True)
     os.makedirs(f"{processed_folder}", exist_ok=True)
     #shutil.copy("complete.py", main_folder)
-    app = DragDropApp()
+    app = App()
     app.mainloop()
