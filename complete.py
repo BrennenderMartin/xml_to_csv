@@ -203,7 +203,7 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 else:
                     entry = get_item(value, root)
 
-                # Adjust entry names
+                # Adjust vehicle type name
                 if key == "vehicle_type_name" and entry in sixSeaterPossibilities:
                     entry = sixSeater
                 elif key == "vehicle_type_name" and entry in saloonPossibilities:
