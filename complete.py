@@ -259,12 +259,13 @@ def main():
 
     # Create the output folder with the current date
     date = datetime.now().strftime(date_format)
-    final_folder = os.path.join(processed_folder, date)
-    os.makedirs(final_folder, exist_ok=True)
+    
 
     if not os.listdir(folder_path):
         app.printing("There are no xml files to be processed")
-    else:    
+    else:   
+        final_folder = os.path.join(processed_folder, date)
+        os.makedirs(final_folder, exist_ok=True) 
         # Iterate over all files in the folder
         for file_name in os.listdir(folder_path):
             file_path = os.path.join(folder_path, file_name)
