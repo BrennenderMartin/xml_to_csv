@@ -6,7 +6,10 @@ import os
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import pandas as pd
-
+"""
+This script converts XML files to CSV format, processes data, and manages file organization.
+It includes a GUI built with customtkinter for user interaction.
+"""
 
 """Global variables:"""
 sixSeater = "6 Seater"
@@ -135,12 +138,16 @@ mapping_default = { "pickup_time": "pickupDate",
                     "created_date": ""
 }
 
-
-
 def get_item(path, root):
     """
-    Extracts the value from the XML path. Supports both single paths (string)
-    and multiple paths (list).
+    Retrieves a value from an XML element based on the provided path.
+
+    Args:
+        path (str or list): Path(s) to the XML element(s).
+        root (Element): Root element of the XML tree.
+
+    Returns:
+        str: Extracted value or empty string if not found.
     """
     if path == "commentary":
         # Collect all <commentary> elements from anywhere in the XML
@@ -149,7 +156,6 @@ def get_item(path, root):
         # Join all found commentary entries into a single string
         return "; ".join(commentary_list) if commentary_list else ""
 
-    
     if isinstance(path, str):
         element = root.find(path)
         if element is not None and element.text:
@@ -163,7 +169,16 @@ def get_item(path, root):
 
 def create_csv_SUNTR(mapping, file_name, root, data):
     """
-    Creates a DataFrame from the mapping and appends data for all transfers to the CSV.
+    Creates a CSV file for SUNTR reference type, processing specific XML paths.
+
+    Args:
+        mapping (dict): Mapping of CSV column names to XML paths.
+        file_name (str): Name of the output CSV file.
+        root (Element): Root element of the XML tree.
+        data (list): List to store rows of data.
+
+    Returns:
+        None
     """
     # Find all <transfer> elements under <transfers>
     transfers = root.find("transfers")
@@ -219,21 +234,27 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 
                 row[key] = entry
 
-        # Append the row for this transfer
         data.append(row)
 
-    # Save to CSV
     df = pd.DataFrame(data, dtype=object)
     df.to_csv(file_name, sep=";", index=False, quoting=3)
 
 def create_csv_default(mapping, file_name, root, data):
     """
-    Creates a DataFrame from the mapping and appends all data to the CSV.
+    Creates a CSV file for non-SUNTR reference types, processing specific XML paths.
+
+    Args:
+        mapping (dict): Mapping of CSV column names to XML paths.
+        file_name (str): Name of the output CSV file.
+        root (Element): Root element of the XML tree.
+        data (list): List to store rows of data.
+
+    Returns:
+        None
     """
     # Iterate over each transfer
     row = {}
     for key, value in mapping.items():
-        
         entry = get_item(value, root)
 
         # Adjust vehicle type name
@@ -246,21 +267,26 @@ def create_csv_default(mapping, file_name, root, data):
         
         row[key] = entry
 
-    # Append the row for this transfer
     data.append(row)
 
-    # Save to CSV
     df = pd.DataFrame(data, dtype=object)
     df.to_csv(file_name, sep=";", index=False, quoting=3)
 
 def main():
-    # Initialize the shared dataset
+    """
+    Main function to process XML files and generate CSVs. It organizes processed
+    files into dated folders and handles SUNTR-specific and default mappings.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     data = []
 
-    # Create the output folder with the current date
     date = datetime.now().strftime(date_format)
     
-
     if not os.listdir(folder_path):
         app.printing("There are no xml files to be processed")
     else:   
@@ -269,8 +295,7 @@ def main():
         # Iterate over all files in the folder
         for file_name in os.listdir(folder_path):
             file_path = os.path.join(folder_path, file_name)
-        
-            # Check if it's an XML file
+            
             if not file_name.endswith(".xml"):
                 app.printing(f"Skipping non-XML file: {file_name}")
                 continue
@@ -281,17 +306,13 @@ def main():
             tree = ET.parse(file_path)
             root = tree.getroot()
 
-            # Determine the mapping based on the reference
             reference = root.find("reference")
             if reference is not None and "SUNTR" in reference.text:
                 app.printing(f"The reference contains SUNTR in {file_name}.")
                 create_csv_SUNTR(mapping_SUNTR, f"{output_folder}/output_{date}.csv", root, data)
             else:
                 app.printing(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
-                create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)
-
-            # Extract data and append it as a new row
-            
+                create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)            
             
             # Move the processed XML file to the date-named folder
             new_file_path = os.path.join(final_folder, file_name)
@@ -299,10 +320,20 @@ def main():
             app.printing(f"Moved file to: {new_file_path}")
 
 class App(ctk.CTk):
+    """
+    GUI application for converting XML files to CSV format.
+
+    Attributes:
+        navigation_frame (CTkFrame): Sidebar for navigation buttons.
+        home_frame (CTkFrame): Main frame for displaying logs and instructions.
+        textbox (CTkTextbox): Output textbox for logs and user guidance.
+    """
     def __init__(self):
+        """
+        Initializes the application window and sets up the layout and widgets.
+        """
         super().__init__()
 
-        # Set up the CTk window
         self.title("Convert xmls to csvs")
         self.geometry("700x450")
         
@@ -369,7 +400,6 @@ class App(ctk.CTk):
             command=self.change_appearance_mode_event
         )
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
-
         
         # create home frame
         self.home_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -378,32 +408,51 @@ class App(ctk.CTk):
         
         self.textbox = ctk.CTkTextbox(self.home_frame, corner_radius=0)
         self.textbox.grid(row=0, column=0, padx=20, pady=10, sticky="nsew")
-        #self.textbox.configure(state="disabled")
         
         self.select_frame_by_name("home")
-        
         self.show_intro()
 
     def select_frame_by_name(self, name):
+        """
+        Displays the specified frame by name.
+
+        Args:
+            name (str): Name of the frame to display.
+
+        Returns:
+            None
+        """
         # show selected frame
         if name == "home":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.home_frame.grid_forget()
-    
-    def home_button_event(self):
-        self.select_frame_by_name("home")
 
     def change_appearance_mode_event(self, new_appearance_mode):
+        """
+        Changes the appearance mode of the application.
+
+        Args:
+            new_appearance_mode (str): Appearance mode ("Light", "Dark", or "System").
+
+        Returns:
+            None
+        """
         ctk.set_appearance_mode(new_appearance_mode)
     
     def select_files(self):
+        """
+        Opens a file dialog for the user to select XML files, and copies the selected
+        files to the input folder.
+
+        Returns:
+            None
+        """
         # Open file dialog to select files
         file_paths = filedialog.askopenfilenames(
             title="Select Files",
             filetypes=(("All Files", "*.*"),)
         )
-        
         if file_paths:
             for file_path in file_paths:
                 self.printing(f"File selected: {file_path}")
@@ -411,11 +460,26 @@ class App(ctk.CTk):
             self.printing("All files have been moved successfully.")
     
     def on_button_click(self):
+        """
+        Triggers the main processing function to convert XML files to CSV and update logs.
+
+        Returns:
+            None
+        """
         self.printing("Action start:")
         main()
         self.printing("Action end.")
 
     def open_output(self, event=None):
+        """
+        Opens the output folder in the file explorer.
+
+        Args:
+            event (optional): Event object from a button click.
+
+        Returns:
+            None
+        """
         try:
             if os.name == "nt":  # Windows
                 os.startfile(output_folder)
@@ -424,7 +488,11 @@ class App(ctk.CTk):
 
     def show_intro(self):
         """
-        Displays an introduction message in the CTkTextbox when the application starts.
+        Displays an introduction message in the application textbox, guiding the user
+        on how to use the program.
+
+        Returns:
+            None
         """
         intro_message = (
             "Welcome to the XML to CSV Converter!\n\n"
@@ -439,6 +507,15 @@ class App(ctk.CTk):
         self.printing(intro_message)
 
     def printing(self, text):
+        """
+        Prints messages to both the console and the GUI's output textbox.
+
+        Args:
+            text (str): Message to display.
+
+        Returns:
+            None
+        """
         print(text)
         self.textbox.configure(state="normal")
         self.textbox.insert("end", f"{text}\n")
@@ -446,10 +523,12 @@ class App(ctk.CTk):
         self.textbox.configure(state="disabled")
 
 if __name__ == "__main__":
+    """
+    Entry point of the program. Sets up required folders and starts the GUI.
+    """
     os.makedirs(main_folder, exist_ok=True)
     os.makedirs(f"{folder_path}", exist_ok=True)
     os.makedirs(f"{output_folder}", exist_ok=True)
     os.makedirs(f"{processed_folder}", exist_ok=True)
-    #shutil.copy("complete.py", main_folder)
     app = App()
     app.mainloop()
