@@ -12,8 +12,11 @@ import pandas as pd
 sixSeater = "6 Seater"
 sixSeaterPossibilities = ["Private Minivan", "Private Minivan (1-6)", "minivan"]
 
+eightSeater = "8 Seater"
+eightSeaterPossibilities = ["Private Minivan (1-8)"]
+
 saloon = "Saloon"
-saloonPossibilities = ["Private Transfer"]
+saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)"]
 
 main_folder = "main"
 folder_path = f"{main_folder}/input"  # Replace with your input folder path
@@ -21,7 +24,7 @@ output_folder =  f"{main_folder}/output" # Replace with your output folder path
 processed_folder = f"{main_folder}/processed" # Replace with your processed folder path
 
 date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
-#source
+
 mapping_SUNTR ={"pickup_time": "transfers/transfer/origin/pickup_time",
                 "pickup_address": "",
                 "pickup_address_complete": "",
@@ -157,7 +160,7 @@ def create_csv_SUNTR(mapping, file_name, root, data):
     # Find all <transfer> elements under <transfers>
     transfers = root.find("transfers")
     if transfers is None:
-        print("No transfers found in this booking.")
+        app.printing("No transfers found in this booking.")
         return
 
     # Iterate over each transfer
@@ -185,9 +188,6 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                 else:
                     row[key] = ""
             
-            
-
-            
             else:
                 # Default behavior for other keys
                 if "transfers/transfer/" in value:  # Adjust paths to be relative to the <transfer>
@@ -200,12 +200,15 @@ def create_csv_SUNTR(mapping, file_name, root, data):
                     entry = sixSeater
                 elif key == "vehicle_type_name" and entry in saloonPossibilities:
                     entry = saloon
+                elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
+                    entry = eightSeater
                 
                 elif key == "ref_number":
                     entry += appendix_ref_number
                 
                 elif key == "source_name":
                     entry = "Sun Transfers"
+                
                 row[key] = entry
 
         # Append the row for this transfer
@@ -229,7 +232,12 @@ def create_csv_default(mapping, file_name, root, data):
             entry = sixSeater
         elif key == "vehicle_type_name" and entry in saloonPossibilities:
             entry = saloon
-
+        elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
+            entry = eightSeater
+        
+        elif key == "source_name":
+            entry = "Sun Transfers"
+        
         row[key] = entry
 
     # Append the row for this transfer
@@ -249,7 +257,7 @@ def main():
     os.makedirs(final_folder, exist_ok=True)
 
     if not os.listdir(folder_path):
-        print("There are no xml files to be processed")
+        app.printing("There are no xml files to be processed")
     else:    
         # Iterate over all files in the folder
         for file_name in os.listdir(folder_path):
@@ -257,10 +265,10 @@ def main():
         
             # Check if it's an XML file
             if not file_name.endswith(".xml"):
-                print(f"Skipping non-XML file: {file_name}")
+                app.printing(f"Skipping non-XML file: {file_name}")
                 continue
 
-            print(f"\nProcessing file: {file_name}")
+            app.printing(f"\nProcessing file: {file_name}")
 
             # Parse the XML file
             tree = ET.parse(file_path)
@@ -269,10 +277,10 @@ def main():
             # Determine the mapping based on the reference
             reference = root.find("reference")
             if reference is not None and "SUNTR" in reference.text:
-                print(f"The reference contains SUNTR in {file_name}.")
+                app.printing(f"The reference contains SUNTR in {file_name}.")
                 create_csv_SUNTR(mapping_SUNTR, f"{output_folder}/output_{date}.csv", root, data)
             else:
-                print(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
+                app.printing(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
                 create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)
 
             # Extract data and append it as a new row
@@ -281,7 +289,7 @@ def main():
             # Move the processed XML file to the date-named folder
             new_file_path = os.path.join(final_folder, file_name)
             shutil.move(file_path, new_file_path)
-            print(f"Moved file to: {new_file_path}")
+            app.printing(f"Moved file to: {new_file_path}")
 
 class DragDropApp(ctk.CTk):
     def __init__(self):
@@ -289,11 +297,14 @@ class DragDropApp(ctk.CTk):
 
         # Set up the CTk window
         self.title("Drag-and-Drop Button Example")
-        self.geometry("400x200")
+        self.geometry("400x300")
+        
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
         # Create a frame for file selection
-        self.select_frame = ctk.CTkFrame(self, width=300, height=100)
-        self.select_frame.pack(pady=50, padx=50)
+        self.select_frame = ctk.CTkFrame(self, width=300)
+        self.select_frame.pack(pady=5, padx=5)
 
         # Create a CTkButton for selecting files
         self.select_button = ctk.CTkButton(
@@ -302,10 +313,13 @@ class DragDropApp(ctk.CTk):
             command=self.select_files
         )
         #self.select_button.pack(fill="both", expand=True)
-        self.select_button.grid(column=0,row=0, padx=5, pady=5)
+        self.select_button.grid(column=0,row=0, padx=5, pady=5, sticky="nsew")
         
         self.action_button = ctk.CTkButton(self.select_frame, text="Action", command=self.on_button_click)
-        self.action_button.grid(column=0,row=1, padx=5, pady=5)
+        self.action_button.grid(column=0,row=1, padx=5, pady=5, sticky="nsew")
+        
+        self.textbox = ctk.CTkTextbox(self.select_frame, width=300, height=200, corner_radius=0)
+        self.textbox.grid(row=2, column=0, sticky="nsew")
 
     def select_files(self):
         # Open file dialog to select files
@@ -316,20 +330,24 @@ class DragDropApp(ctk.CTk):
         
         if file_paths:
             for file_path in file_paths:
-                print(f"File selected: {file_path}")
+                self.printing(f"File selected: {file_path}")
                 shutil.copy(file_path, folder_path)
-            print("All files have been moved successfully.")
+            self.printing("All files have been moved successfully.")
     
     def on_button_click(self):
-        print("Action start:")
+        self.printing("Action start:")
         main()
-        print("Action end.")
+        self.printing("Action end.")
 
     def on_file_drop(self, event):
         file_paths = event.data.split()  # File paths separated by spaces
         for file_path in file_paths:
-            print(f"File dropped: {file_path}")
+            self.printing(f"File dropped: {file_path}")
             shutil.move(file_path, folder_path)
+
+    def printing(self, text):
+        self.textbox.insert("end", f"{text}\n")
+        self.textbox.see("end")
 
 if __name__ == "__main__":
     os.makedirs(main_folder, exist_ok=True)
