@@ -25,7 +25,10 @@ folder_path = f"{main_folder}\input"
 output_folder =  f"{main_folder}\output"
 processed_folder = f"{main_folder}\processed"
 
-date_format = "%Y-%m-%d_%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
+date_format = "%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
+day_format = "%Y-%m-%d" #Here: Year-Month-Day
+
+data = []
 
 mapping_SUNTR = {   "pickup_time": "transfers/transfer/origin/pickup_time",
                     "pickup_address": "",
@@ -137,6 +140,61 @@ mapping_default = { "pickup_time": "pickupDate",
                     "created_date": ""
 }
 
+mapping_excel = {   "pickup_time": ["Fecha", "Hora"],
+                    "pickup_address": "Origen",
+                    "pickup_address_complete": "",
+                    "pickup_latitude": "",
+                    "pickup_longitude": "",
+                    "dropoff_address": "Destino",
+                    "dropoff_address_complete": "",
+                    "dropoff_latitude": "",
+                    "dropoff_longitude": "",
+                    "via_address": "",
+                    "via_address_complete": "",
+                    "vehicle_type_name": "",
+                    "estimated_distance": "",
+                    "estimated_duration": "",
+                    "ref_number": "Reservera",
+                    "total_price": "Neto",
+                    "discount_price": "",
+                    "discount_code": "",
+                    "service_name": "",
+                    "service_duration_in_hours": "",
+                    "passenger1_name": ["Nombre", "Apellidos"],
+                    "passenger1_email": "",
+                    "passenger1_phone": "",
+                    "passenger2_name": "",
+                    "passenger2_email": "",
+                    "passenger2_phone": "",
+                    "requirements": "",
+                    "passenger_count": "PAX",
+                    "luggage_count": "",
+                    "hand_luggage_count": "",
+                    "child_seat_count": "",
+                    "booster_seat_count": "",
+                    "infant_seat_count": "",
+                    "wheelchair_count": "",
+                    "pickup_flight_number": "Vuelo",
+                    "pickup_flight_time": "",
+                    "pickup_flight_city": "",
+                    "dropoff_flight_number": "",
+                    "dropoff_flight_time": "",
+                    "dropoff_flight_city": "",
+                    "meet_and_greet": "",
+                    "meeting_point": "",
+                    "meeting_board": "",
+                    "waiting_time_in_minutes": "",
+                    "source_name": "",
+                    "source_details": "",
+                    "custom_field_1": "",
+                    "custom_field_2": "",
+                    "custom_field_3": "",
+                    "custom_field_4": "",
+                    "admin_note": "",
+                    "ip_address": "",
+                    "created_date": ""
+}
+
 def get_item(path, root):
     """
     Retrieves a value from an XML element based on the provided path.
@@ -166,7 +224,7 @@ def get_item(path, root):
         )
     return ""
 
-def create_csv_SUNTR(mapping, file_name, root, data):
+def create_csv_SUNTR(mapping, root):
     """
     Creates a CSV file for SUNTR reference type, processing specific XML paths.
 
@@ -256,10 +314,11 @@ def create_csv_SUNTR(mapping, file_name, root, data):
 
         data.append(row)
 
+    """
     df = pd.DataFrame(data, dtype=object)
-    df.to_csv(file_name, sep=";", index=False, quoting=3)
+    df.to_csv(file_name, sep=";", index=False, quoting=3)"""
 
-def create_csv_default(mapping, file_name, root, data):
+def create_csv_default(mapping, root):
     """
     Creates a CSV file for non-SUNTR reference types, processing specific XML paths.
 
@@ -288,9 +347,48 @@ def create_csv_default(mapping, file_name, root, data):
         row[key] = entry
 
     data.append(row)
-
+    """
     df = pd.DataFrame(data, dtype=object)
-    df.to_csv(file_name, sep=";", index=False, quoting=3)
+    df.to_csv(file_name, sep=";", index=False, quoting=3)"""
+
+def read_excel(file_path):
+    """
+    Reads an Excel file, uses the 2nd row as column headers, maps the data, and saves it to CSV.
+
+    Returns:
+        None
+    """
+    try:
+        # Load Excel file, setting the second row (index=1) as the header
+        excel_df = pd.read_excel(file_path, dtype=str, header=1)  # 1 means "second row as header"
+
+        # Process each row
+        for _, row in excel_df.iterrows():
+            transformed_row = {}
+            for key, value in mapping_excel.items():
+                if isinstance(value, list):
+                    # Combine multiple fields into a single column (e.g., first & last name)
+                    transformed_row[key] = " ".join(
+                        row[col] for col in value if col in row and pd.notna(row[col])
+                    ).strip()
+                else:
+                    # Assign a single field if it exists
+                    transformed_row[key] = row[value] if value in row and pd.notna(row[value]) else ""
+
+            data.append(transformed_row)
+
+        """
+        # Convert the list into a DataFrame
+        df = pd.DataFrame(data, dtype=object)
+
+        # **Fix: Specify a full file path for the CSV inside the output folder**
+        df.to_csv(file_name, sep=";", index=False, quoting=3)
+        """
+        app.printing(f"Successfully converted {file_path} to.")
+
+    except Exception as e:
+        app.printing(f"Error converting Excel to CSV: {e}")
+
 
 def main():
     """
@@ -303,41 +401,57 @@ def main():
     Returns:
         None
     """
-    data = []
-
-    date = datetime.now().strftime(date_format)
+    time = datetime.now().strftime(date_format)
+    day = datetime.now().strftime(day_format)
     
     if not os.listdir(folder_path):
         app.printing("There are no xml files to be processed")
     else:   
-        final_folder = os.path.join(processed_folder, date)
+        final_folder = os.path.join(processed_folder, day)
         os.makedirs(final_folder, exist_ok=True) 
+        
+        final_final_folder = os.path.join(final_folder, time)
+        os.makedirs(final_final_folder, exist_ok=True) 
+        
+        output_output_folder = os.path.join(output_folder, day)
+        os.makedirs(output_output_folder, exist_ok=True) 
         # Iterate over all files in the folder
         for file_name in os.listdir(folder_path):
             file_path = os.path.join(folder_path, file_name)
             
-            if not file_name.endswith(".xml"):
-                app.printing(f"Skipping non-XML file: {file_name}")
-                continue
+            if file_name.endswith(".xml"):
+                app.printing(f"\nProcessing file: {file_name}")
+                # Parse the XML file
+                tree = ET.parse(file_path)
+                root = tree.getroot()
 
-            app.printing(f"\nProcessing file: {file_name}")
-
-            # Parse the XML file
-            tree = ET.parse(file_path)
-            root = tree.getroot()
-
-            reference = root.find("reference")
-            if reference is not None and "SUNTR" in reference.text:
-                app.printing(f"The reference contains SUNTR in {file_name}.")
-                create_csv_SUNTR(mapping_SUNTR, f"{output_folder}/output_{date}.csv", root, data)
-            else:
-                app.printing(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
-                create_csv_default(mapping_default, f"{output_folder}/output_{date}.csv", root, data)            
+                reference = root.find("reference")
+                if reference is not None and "SUNTR" in reference.text:
+                    app.printing(f"The reference contains SUNTR in {file_name}.")
+                    create_csv_SUNTR(mapping_SUNTR, root)
+                else:
+                    app.printing(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
+                    create_csv_default(mapping_default, root)            
+                
+                # Move the processed XML file to the date-named folder
+                new_file_path = os.path.join(final_final_folder, file_name)
+                shutil.move(file_path, new_file_path)
+                app.printing(f"Moved file to: {new_file_path}")
             
-            # Move the processed XML file to the date-named folder
-            new_file_path = os.path.join(final_folder, file_name)
-            shutil.move(file_path, new_file_path)
-            app.printing(f"Moved file to: {new_file_path}")
+            elif file_name.endswith(".xlsx"):
+                app.printing(f"\nProcessing file: {file_name}")
+                read_excel(file_path)
+                
+                # Move the processed XML file to the date-named folder
+                new_file_path = os.path.join(final_final_folder, file_name)
+                shutil.move(file_path, new_file_path)
+                app.printing(f"Moved file to: {new_file_path}")
+            
+            else:
+                app.printing(f"Skipping non-XML file: {file_name}")
+        
+        df = pd.DataFrame(data, dtype=object)
+        df.to_csv(f"{output_output_folder}/output_{day}_{time}.csv", sep=";", index=False, quoting=3)
 
 class App(ctk.CTk):
     """
