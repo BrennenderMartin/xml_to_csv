@@ -389,7 +389,6 @@ def read_excel(file_path):
     except Exception as e:
         app.printing(f"Error converting Excel to CSV: {e}")
 
-
 def main():
     """
     Main function to process XML files and generate CSVs. It organizes processed
