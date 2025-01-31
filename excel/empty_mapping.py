@@ -1,7 +1,5 @@
-import pandas as pd
-import os
 
-mapping_excel = {   "pickup_time": "",
+mapping_empty = {   "pickup_time": "",
                     "pickup_address": "",
                     "pickup_address_complete": "",
                     "pickup_latitude": "",
@@ -55,10 +53,3 @@ mapping_excel = {   "pickup_time": "",
                     "ip_address": "",
                     "created_date": ""
 }
-
-main_path = "excel"
-
-excel_df = pd.read_excel(f"{main_path}/listado.xls", dtype=str, engine='xlrd')
-
-print(excel_df)
-#print(f"Vehicle Type: {excel_df.at[0, "Vehicle Type"]}")
