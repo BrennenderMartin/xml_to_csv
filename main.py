@@ -23,6 +23,7 @@ main_folder = "main"
 folder_path = f"{main_folder}/input"
 output_folder =  f"{main_folder}/output"
 processed_folder = f"{main_folder}/processed"
+folders = [main_folder, folder_path, output_folder, processed_folder]
 
 time_format = "%H-%M-%S" #Here: Hour-Minute-Second
 day_format = "%Y-%m-%d" #Here: Year-Month-Day
@@ -702,9 +703,7 @@ if __name__ == "__main__":
     """
     Entry point of the program. Sets up required folders and starts the GUI.
     """
-    os.makedirs(main_folder, exist_ok=True)
-    os.makedirs(folder_path, exist_ok=True)
-    os.makedirs(output_folder, exist_ok=True)
-    os.makedirs(processed_folder, exist_ok=True)
+    for folder in folders:
+        os.makedirs(folder, exist_ok=True)
     app = App()
     app.mainloop()
