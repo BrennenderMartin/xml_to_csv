@@ -1,6 +1,7 @@
 """ Main xml to csv file:
     This script converts XML files to CSV format, processes data, and manages file organization.
-    It includes a GUI built with customtkinter for user interaction. """
+    It includes a GUI built with customtkinter for user interaction. 
+"""
 import customtkinter as ctk
 from tkinter import filedialog
 import shutil
@@ -8,8 +9,9 @@ import os
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import pandas as pd
+import re 
 
-"""Global variables:"""
+""" Global variables: """
 sixSeater = "6 Seater"
 sixSeaterPossibilities = ["Private Minivan", "Private Minivan (1-6)", "minivan"]
 
@@ -196,15 +198,14 @@ mapping_excel = {   "pickup_time": ["Fecha", "Hora"],
 }
 
 def get_item(path, root):
-    """
-    Retrieves a value from an XML element based on the provided path.
+    """ Retrieves a value from an XML element based on the provided path.
 
-    Args:
-        path (str or list): Path(s) to the XML element(s).
-        root (Element): Root element of the XML tree.
+        Args:
+            path (str or list): Path(s) to the XML element(s).
+            root (Element): Root element of the XML tree.
 
-    Returns:
-        str: Extracted value or empty string if not found.
+        Returns:
+            str: Extracted value or empty string if not found.
     """
     if path == "commentary":
         # Collect all <commentary> elements from anywhere in the XML
@@ -225,17 +226,16 @@ def get_item(path, root):
     return ""
 
 def create_csv_SUNTR(mapping, root):
-    """
-    Creates a CSV file for SUNTR reference type, processing specific XML paths.
+    """ Creates a CSV file for SUNTR reference type, processing specific XML paths.
 
-    Args:
-        mapping (dict): Mapping of CSV column names to XML paths.
-        file_name (str): Name of the output CSV file.
-        root (Element): Root element of the XML tree.
-        data (list): List to store rows of data.
+        Args:
+            mapping (dict): Mapping of CSV column names to XML paths.
+            file_name (str): Name of the output CSV file.
+            root (Element): Root element of the XML tree.
+            data (list): List to store rows of data.
 
-    Returns:
-        None
+        Returns:
+            None
     """
     # Find all <transfer> elements under <transfers>
     transfers = root.find("transfers")
@@ -314,22 +314,41 @@ def create_csv_SUNTR(mapping, root):
                     old_entry = entry
                     entry = f"ST - {old_entry}"
                 
+                elif key == "pickup_flight_number":
+                    flight_number = get_item("flight/flight_number", transfer.find("origin"))
+                    airline = get_item("flight/airline", transfer.find("origin"))
+                    
+                    # Extract only the airline code (letters inside brackets)
+                    airline_code = ""
+                    if airline:
+                        match = re.search(r"\((\w+)\)", airline)  # Find letters inside ()
+                        if match:
+                            airline_code = match.group(1)  # Extract the matched code
+
+                    # Combine airline code with flight number
+                    if airline_code and flight_number:
+                        entry = f"{airline_code}{flight_number}"
+                    elif flight_number:
+                        entry = flight_number
+                    else:
+                        entry = ""
+
+                
                 row[key] = entry
 
         data.append(row)
 
 def create_csv_default(mapping, root):
-    """
-    Creates a CSV file for non-SUNTR reference types, processing specific XML paths.
+    """ Creates a CSV file for non-SUNTR reference types, processing specific XML paths.
 
-    Args:
-        mapping (dict): Mapping of CSV column names to XML paths.
-        file_name (str): Name of the output CSV file.
-        root (Element): Root element of the XML tree.
-        data (list): List to store rows of data.
+        Args:
+            mapping (dict): Mapping of CSV column names to XML paths.
+            file_name (str): Name of the output CSV file.
+            root (Element): Root element of the XML tree.
+            data (list): List to store rows of data.
 
-    Returns:
-        None
+        Returns:
+            None
     """
     # Iterate over each transfer
     row = {}
@@ -353,11 +372,10 @@ def create_csv_default(mapping, root):
     data.append(row)
 
 def read_excel(file_path):
-    """
-    Reads an Excel file, uses the 2nd row as column headers, maps the data, and saves it to CSV.
+    """ Reads an Excel file, uses the 2nd row as column headers, maps the data, and saves it to CSV.
 
-    Returns:
-        None
+        Returns:
+            None
     """
     try:
         # Load Excel file, setting the second row (index=1) as the header
@@ -393,15 +411,15 @@ def read_excel(file_path):
         app.printing(f"Error converting Excel to CSV: {e}")
 
 def main():
-    """
-    Main function to process XML files and generate CSVs. It organizes processed
-    files into dated folders and handles SUNTR-specific and default mappings.
+    """ Main function to process XML files and generate CSVs. 
+        It organizes processed files into dated folders and 
+        handles SUNTR-specific and default mappings.
 
-    Args:
-        None
+        Args:
+            None
 
-    Returns:
-        None
+        Returns:
+            None
     """
     day = datetime.now().strftime(day_format)
     time = datetime.now().strftime(time_format)
@@ -457,18 +475,15 @@ def main():
         df.to_csv(f"{output_output_folder}/output_{date}.csv", sep=";", index=False, quoting=3)
 
 class App(ctk.CTk):
-    """
-    GUI application for converting XML files to CSV format.
+    """ GUI application for converting XML files to CSV format.
 
-    Attributes:
-        navigation_frame (CTkFrame): Sidebar for navigation buttons.
-        home_frame (CTkFrame): Main frame for displaying logs and instructions.
-        textbox (CTkTextbox): Output textbox for logs and user guidance.
+        Attributes:
+            navigation_frame (CTkFrame): Sidebar for navigation buttons.
+            home_frame (CTkFrame): Main frame for displaying logs and instructions.
+            textbox (CTkTextbox): Output textbox for logs and user guidance.
     """
     def __init__(self):
-        """
-        Initializes the application window and sets up the layout and widgets.
-        """
+        """ Initializes the application window and sets up the layout and widgets. """
         super().__init__()
 
         self.title("Convert xmls and xlsxs to one csv")
@@ -564,14 +579,13 @@ class App(ctk.CTk):
         self.show_intro()
 
     def select_frame_by_name(self, name):
-        """
-        Displays the specified frame by name.
+        """ Displays the specified frame by name.
 
-        Args:
-            name (str): Name of the frame to display.
+            Args:
+                name (str): Name of the frame to display.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         # show selected frame
         if name == "home":
@@ -580,24 +594,22 @@ class App(ctk.CTk):
             self.home_frame.grid_forget()
 
     def change_appearance_mode_event(self, new_appearance_mode):
-        """
-        Changes the appearance mode of the application.
+        """ Changes the appearance mode of the application.
 
-        Args:
-            new_appearance_mode (str): Appearance mode ("Light", "Dark", or "System").
+            Args:
+                new_appearance_mode (str): Appearance mode ("Light", "Dark", or "System").
 
-        Returns:
-            None
+            Returns:
+                None
         """
         ctk.set_appearance_mode(new_appearance_mode)
     
     def select_files(self):
-        """
-        Opens a file dialog for the user to select XML files, and copies the selected
-        files to the input folder.
+        """ Opens a file dialog for the user to select XML files, and copies the selected
+            files to the input folder.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         # Open file dialog to select files
         file_paths = filedialog.askopenfilenames(
@@ -611,25 +623,23 @@ class App(ctk.CTk):
             self.printing("All files have been moved successfully.")
     
     def main_process(self):
-        """
-        Triggers the main processing function to convert XML files to CSV and update logs.
+        """ Triggers the main processing function to convert XML files to CSV and update logs.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         self.printing("Action start:")
         main()
         self.printing("Action end.")
 
     def open_output(self, event=None):
-        """
-        Opens the output folder in the file explorer.
+        """ Opens the output folder in the file explorer.
 
-        Args:
-            event (optional): Event object from a button click.
+            Args:
+                event (optional): Event object from a button click.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         try:
             if os.name == "nt":
@@ -638,11 +648,10 @@ class App(ctk.CTk):
             self.printing(f"Error opening output folder: {e}")
 
     def remove(self):
-        """
-        Removes the most recently added file from the input folder.
+        """ Removes the most recently added file from the input folder.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         try:
             # Get a list of all files in the input folder
@@ -663,12 +672,11 @@ class App(ctk.CTk):
             self.printing(f"Error removing the latest file: {e}")
 
     def show_intro(self):
-        """
-        Displays an introduction message in the application textbox, guiding the user
-        on how to use the program.
+        """ Displays an introduction message in the application textbox, guiding the user
+            on how to use the program.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         intro_message = (
             "Welcome to the XML to CSV Converter!\n\n"
@@ -684,14 +692,13 @@ class App(ctk.CTk):
         self.printing(intro_message)
 
     def printing(self, text):
-        """
-        Prints messages to both the console and the GUI's output textbox.
+        """ Prints messages to both the console and the GUI's output textbox.
 
-        Args:
-            text (str): Message to display.
+            Args:
+                text (str): Message to display.
 
-        Returns:
-            None
+            Returns:
+                None
         """
         #print(text)
         self.textbox.configure(state="normal")
@@ -700,9 +707,7 @@ class App(ctk.CTk):
         self.textbox.configure(state="disabled")
 
 if __name__ == "__main__":
-    """
-    Entry point of the program. Sets up required folders and starts the GUI.
-    """
+    """ Entry point of the program. Sets up required folders and starts the GUI. """
     for folder in folders:
         os.makedirs(folder, exist_ok=True)
     app = App()

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booking>
+  <reference>SUNTR_QY5760</reference>
+  <agency_name/>
+  <customer>
+    <name><![CDATA[Jane]]></name>
+    <surname><![CDATA[Auld]]></surname>
+  </customer>
+  <lead_passenger>
+    <name><![CDATA[Jane]]></name>
+    <surname><![CDATA[Auld]]></surname>
+    <email><![CDATA[]]></email>
+    <mobile><![CDATA[+44 7970508767]]></mobile>
+  </lead_passenger>
+  <transfers>
+    <transfer>
+      <transfer_document>SUNTR_QY5760/1</transfer_document>
+      <transfer_rate>38.5</transfer_rate>
+      <vehicle>
+        <code>tx4</code>
+        <title><![CDATA[Private Transfer]]></title>
+        <max_passengers>4</max_passengers>
+        <type>taxi</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>2</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <pickup_time>2025-03-27 15:25:00</pickup_time>
+        <flight>
+          <airline><![CDATA[Ryanair UK (RK)]]></airline>
+          <flight_number>663</flight_number>
+          <date>2025-03-27 15:25:00</date>
+          <origin_airport><![CDATA[Birmingham International Airport (BHX)]]></origin_airport>
+        </flight>
+      </origin>
+      <destination type="city">
+        <accommodation>
+          <name><![CDATA[The Alex]]></name>
+          <address><![CDATA[41-47 Fenian Street Dublin 2]]></address>
+          <pickup_name><![CDATA[The Alex]]></pickup_name>
+          <pickup_address><![CDATA[41-47 Fenian Street Dublin 2]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-02-04 11:41:08</creation_date>
+    </transfer>
+    <transfer>
+      <transfer_document>SUNTR_QY5760/2</transfer_document>
+      <transfer_rate>38.5</transfer_rate>
+      <vehicle>
+        <code>tx4</code>
+        <title><![CDATA[Private Transfer]]></title>
+        <max_passengers>4</max_passengers>
+        <type>taxi</type>
+      </vehicle>
+      <passengers>
+        <total_passengers>2</total_passengers>
+        <number_children>0</number_children>
+        <number_babies>0</number_babies>
+      </passengers>
+      <origin type="city">
+        <accommodation>
+          <name><![CDATA[The Alex]]></name>
+          <address><![CDATA[41-47 Fenian Street Dublin 2]]></address>
+          <pickup_name><![CDATA[The Alex]]></pickup_name>
+          <pickup_address><![CDATA[41-47 Fenian Street Dublin 2]]></pickup_address>
+        </accommodation>
+        <id>12839</id>
+        <name><![CDATA[Dublin city centre]]></name>
+        <pickup_time>2025-03-28 09:20:00</pickup_time>
+      </origin>
+      <destination type="airport">
+        <id>12818</id>
+        <name><![CDATA[Dublin airport]]></name>
+        <flight>
+          <airline><![CDATA[Aer Lingus (EI)]]></airline>
+          <flight_number>NOT_NEEDED</flight_number>
+          <date>2025-03-28 11:45:00</date>
+        </flight>
+      </destination>
+      <status>CREATED</status>
+      <creation_date>2025-02-04 11:41:08</creation_date>
+    </transfer>
+  </transfers>
+</booking>
