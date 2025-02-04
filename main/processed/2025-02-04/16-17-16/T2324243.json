@@ -1,0 +1,22 @@
+{
+    "jsonType": 1,
+    "id": "2324243",
+    "nombre": "Antonia",
+    "apellidos": "Castano Mora",
+    "telefono": "(34) 667919519",
+    "trayecto": "Dublín centro - Aeropuerto de Dublín",
+    "puntoRecogida": "The Dawson Spa, William Street South, Dublín, Irlanda",
+    "aerolineaNumeroVuelo": "RYANNAIR 7062",
+    "vehiculo": "Vehículo de 4 plazas",
+    "capacidad": "4",
+    "equipajeFacturado": "No",
+    "numViajeros": "4",
+    "tipo": "Privado",
+    "fechaRecogida": "2025-08-17",
+    "horaRecogida": "14:40:00",
+    "fechaReserva": "2025-01-31 17:48:20",
+    "precioTotal": "47.00",
+    "precioNeto": 36.5,
+    "divisa": "EUR",
+    "comentarios": ""
+}

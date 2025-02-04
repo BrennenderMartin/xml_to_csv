@@ -10,7 +10,6 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 import pandas as pd
 import re 
-import json
 
 """ Global variables: """
 sixSeater = "6 Seater"
@@ -20,7 +19,7 @@ eightSeater = "8 Seater"
 eightSeaterPossibilities = ["Private Minivan (1-8)"]
 
 saloon = "Saloon"
-saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)", "Vehículo de 4 plazas"]
+saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)"]
 
 main_folder = "main"
 folder_path = f"{main_folder}\input"
@@ -143,41 +142,41 @@ mapping_default = { "pickup_time": "pickupDate",
                     "created_date": ""
 }
 
-mapping_cv = {      "pickup_time": ["fechaRecogida", "horaRecogida"],
-                    "pickup_address": "puntoRecogida",
+mapping_excel = {   "pickup_time": ["Fecha", "Hora"],
+                    "pickup_address": "Origen",
                     "pickup_address_complete": "",
                     "pickup_latitude": "",
                     "pickup_longitude": "",
-                    "dropoff_address": "hotelPuntoDestino",
+                    "dropoff_address": "Destino",
                     "dropoff_address_complete": "",
                     "dropoff_latitude": "",
                     "dropoff_longitude": "",
                     "via_address": "",
                     "via_address_complete": "",
-                    "vehicle_type_name": "vehiculo",
+                    "vehicle_type_name": "",
                     "estimated_distance": "",
                     "estimated_duration": "",
-                    "ref_number": "id",
-                    "total_price": "precioTotal",
+                    "ref_number": "Reservera",
+                    "total_price": "Neto",
                     "discount_price": "",
                     "discount_code": "",
                     "service_name": "",
                     "service_duration_in_hours": "",
-                    "passenger1_name": ["nombre", "apellidos"],
+                    "passenger1_name": ["Nombre", "Apellidos"],
                     "passenger1_email": "",
-                    "passenger1_phone": "telefono",
+                    "passenger1_phone": "",
                     "passenger2_name": "",
                     "passenger2_email": "",
                     "passenger2_phone": "",
                     "requirements": "",
-                    "passenger_count": "numViajeros",
-                    "luggage_count": "equipajeFacturado",
+                    "passenger_count": "PAX",
+                    "luggage_count": "",
                     "hand_luggage_count": "",
                     "child_seat_count": "",
                     "booster_seat_count": "",
                     "infant_seat_count": "",
                     "wheelchair_count": "",
-                    "pickup_flight_number": "aerolineaNumeroVuelo",
+                    "pickup_flight_number": "Vuelo",
                     "pickup_flight_time": "",
                     "pickup_flight_city": "",
                     "dropoff_flight_number": "",
@@ -372,52 +371,44 @@ def create_csv_default(mapping, root):
 
     data.append(row)
 
-def create_csv_cv(file, mapping):
+def read_excel(file_path):
+    """ Reads an Excel file, uses the 2nd row as column headers, maps the data, and saves it to CSV.
+
+        Returns:
+            None
     """
-    Converts JSON data into a CSV row based on the provided mapping.
+    try:
+        # Load Excel file, setting the second row (index=1) as the header
+        excel_df = pd.read_excel(file_path, dtype=str, header=1)  # 1 means "second row as header"
 
-    Args:
-        file (str): Path to the JSON file.
-        mapping (dict): Mapping of CSV keys to JSON keys.
+        # Process each row
+        for _, row in excel_df.iterrows():
+            transformed_row = {}
+            for key, value in mapping_excel.items():
+                if isinstance(value, list):
+                    if key == "passenger1_name":
+                        # Combine multiple fields into a single column (e.g., first & last name)
+                        full_name = " ".join(
+                            row[col] for col in value if col in row and pd.notna(row[col])
+                        ).strip()
 
-    Returns:
-        None
-    """
-    print("Creating the .csv from the .json")
-    with open(file, "r") as file:
-        json_data = json.load(file)
-    
-    row = {}
-    for key, value in mapping.items():
-        if isinstance(value, list):  # Handle multi-field mappings
-            entry = " ".join(
-                json_data[item] for item in value if item in json_data and json_data[item]
-            ).strip()
-        
-        elif key == "vehicle_type_name" and entry in sixSeaterPossibilities:
-            entry = sixSeater
-        elif key == "vehicle_type_name" and entry in saloonPossibilities:
-            entry = saloon
-        elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
-            entry = eightSeater
-        
-        elif key == "dropoff_address":
-            
-            # Extract the destination from the trayecto field
-            trayecto = json_data.get("trayecto", "")  # Get the trayecto field, default to an empty string
-            if " - " in trayecto:
-                destination = trayecto.split(" - ")[1].strip()  # Split by ' - ' and take the second part
-            else:
-                destination = ""  # Default to empty if no separator is found
+                        # Prefix with "Name - "
+                        transformed_row[key] = f"CV - {full_name}" if full_name else ""
+                    else:
+                        # Combine multiple fields into a single column (e.g., first & last name)
+                        transformed_row[key] = " ".join(
+                            row[col] for col in value if col in row and pd.notna(row[col])
+                        ).strip()
+                else:
+                    # Assign a single field if it exists
+                    transformed_row[key] = row[value] if value in row and pd.notna(row[value]) else ""
+                
+            data.append(transformed_row)
 
-            entry = destination
-        
-        else:
-            entry = json_data.get(value, "")
-            
-        row[key] = entry  # Add the extracted value to the row
-    
-    data.append(row)  # Append the row to the global data list
+        app.printing(f"Successfully converted {file_path} to.")
+
+    except Exception as e:
+        app.printing(f"Error converting Excel to CSV: {e}")
 
 def main():
     """ Main function to process XML files and generate CSVs. 
@@ -470,16 +461,7 @@ def main():
             
             elif file_name.endswith(".xlsx"):
                 app.printing(f"\nProcessing file: {file_name}")
-                #read_excel(file_path)
-                
-                # Move the processed XML file to the date-named folder
-                new_file_path = os.path.join(final_final_folder, file_name)
-                shutil.move(file_path, new_file_path)
-                app.printing(f"Moved file to: {new_file_path}")
-            
-            elif file_name.endswith(".json"):
-                app.printing(f"\nProcessing file: {file_name}")
-                create_csv_cv(file_path, mapping_cv)
+                read_excel(file_path)
                 
                 # Move the processed XML file to the date-named folder
                 new_file_path = os.path.join(final_final_folder, file_name)
