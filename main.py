@@ -1,3 +1,6 @@
+""" Main xml to csv file:
+    This script converts XML files to CSV format, processes data, and manages file organization.
+    It includes a GUI built with customtkinter for user interaction. """
 import customtkinter as ctk
 from tkinter import filedialog
 import shutil
@@ -5,10 +8,6 @@ import os
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import pandas as pd
-"""
-This script converts XML files to CSV format, processes data, and manages file organization.
-It includes a GUI built with customtkinter for user interaction.
-"""
 
 """Global variables:"""
 sixSeater = "6 Seater"
@@ -21,11 +20,11 @@ saloon = "Saloon"
 saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)"]
 
 main_folder = "main"
-folder_path = f"{main_folder}\input"
-output_folder =  f"{main_folder}\output"
-processed_folder = f"{main_folder}\processed"
+folder_path = f"{main_folder}/input"
+output_folder =  f"{main_folder}/output"
+processed_folder = f"{main_folder}/processed"
 
-date_format = "%H-%M-%S" #Here: Year-Month-Day_Hour-Minute-Second
+time_format = "%H-%M-%S" #Here: Hour-Minute-Second
 day_format = "%Y-%m-%d" #Here: Year-Month-Day
 
 data = []
@@ -314,10 +313,6 @@ def create_csv_SUNTR(mapping, root):
 
         data.append(row)
 
-    """
-    df = pd.DataFrame(data, dtype=object)
-    df.to_csv(file_name, sep=";", index=False, quoting=3)"""
-
 def create_csv_default(mapping, root):
     """
     Creates a CSV file for non-SUNTR reference types, processing specific XML paths.
@@ -347,9 +342,6 @@ def create_csv_default(mapping, root):
         row[key] = entry
 
     data.append(row)
-    """
-    df = pd.DataFrame(data, dtype=object)
-    df.to_csv(file_name, sep=";", index=False, quoting=3)"""
 
 def read_excel(file_path):
     """
@@ -377,13 +369,6 @@ def read_excel(file_path):
 
             data.append(transformed_row)
 
-        """
-        # Convert the list into a DataFrame
-        df = pd.DataFrame(data, dtype=object)
-
-        # **Fix: Specify a full file path for the CSV inside the output folder**
-        df.to_csv(file_name, sep=";", index=False, quoting=3)
-        """
         app.printing(f"Successfully converted {file_path} to.")
 
     except Exception as e:
@@ -400,12 +385,13 @@ def main():
     Returns:
         None
     """
-    time = datetime.now().strftime(date_format)
     day = datetime.now().strftime(day_format)
+    time = datetime.now().strftime(time_format)
+    date = f"{day}_{time}"
     
     if not os.listdir(folder_path):
         app.printing("There are no xml files to be processed")
-    else:   
+    else:
         final_folder = os.path.join(processed_folder, day)
         os.makedirs(final_folder, exist_ok=True) 
         
@@ -447,10 +433,10 @@ def main():
                 app.printing(f"Moved file to: {new_file_path}")
             
             else:
-                app.printing(f"Skipping non-XML file: {file_name}")
+                app.printing(f"Skipping non-XML or xlsx file: {file_name}")
         
         df = pd.DataFrame(data, dtype=object)
-        df.to_csv(f"{output_output_folder}/output_{day}_{time}.csv", sep=";", index=False, quoting=3)
+        df.to_csv(f"{output_output_folder}/output_{date}.csv", sep=";", index=False, quoting=3)
 
 class App(ctk.CTk):
     """
@@ -467,7 +453,7 @@ class App(ctk.CTk):
         """
         super().__init__()
 
-        self.title("Convert xmls to csvs")
+        self.title("Convert xmls and xlsxs to one csv")
         self.geometry("750x300")
         
         self.grid_rowconfigure(0, weight=1)
@@ -628,7 +614,7 @@ class App(ctk.CTk):
             None
         """
         try:
-            if os.name == "nt":  # Windows
+            if os.name == "nt":
                 os.startfile(output_folder)
         except Exception as e:
             self.printing(f"Error opening output folder: {e}")
@@ -689,7 +675,7 @@ class App(ctk.CTk):
         Returns:
             None
         """
-        print(text)
+        #print(text)
         self.textbox.configure(state="normal")
         self.textbox.insert("end", f"{text}\n")
         self.textbox.see("end")
@@ -700,8 +686,8 @@ if __name__ == "__main__":
     Entry point of the program. Sets up required folders and starts the GUI.
     """
     os.makedirs(main_folder, exist_ok=True)
-    os.makedirs(f"{folder_path}", exist_ok=True)
-    os.makedirs(f"{output_folder}", exist_ok=True)
-    os.makedirs(f"{processed_folder}", exist_ok=True)
+    os.makedirs(folder_path, exist_ok=True)
+    os.makedirs(output_folder, exist_ok=True)
+    os.makedirs(processed_folder, exist_ok=True)
     app = App()
     app.mainloop()
