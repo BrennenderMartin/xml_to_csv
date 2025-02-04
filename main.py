@@ -309,6 +309,10 @@ def create_csv_SUNTR(mapping, root):
                 elif key == "ref_number":
                     entry += appendix_ref_number
                 
+                elif key == "passenger1_name":
+                    old_entry = entry
+                    entry = f"ST - {old_entry}"
+                
                 row[key] = entry
 
         data.append(row)
@@ -339,6 +343,10 @@ def create_csv_default(mapping, root):
         elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
             entry = eightSeater
         
+        elif key == "passenger1_name":
+            old_entry = entry
+            entry = f"MT - {old_entry}"
+        
         row[key] = entry
 
     data.append(row)
@@ -359,14 +367,23 @@ def read_excel(file_path):
             transformed_row = {}
             for key, value in mapping_excel.items():
                 if isinstance(value, list):
-                    # Combine multiple fields into a single column (e.g., first & last name)
-                    transformed_row[key] = " ".join(
-                        row[col] for col in value if col in row and pd.notna(row[col])
-                    ).strip()
+                    if key == "passenger1_name":
+                        # Combine multiple fields into a single column (e.g., first & last name)
+                        full_name = " ".join(
+                            row[col] for col in value if col in row and pd.notna(row[col])
+                        ).strip()
+
+                        # Prefix with "Name - "
+                        transformed_row[key] = f"CV - {full_name}" if full_name else ""
+                    else:
+                        # Combine multiple fields into a single column (e.g., first & last name)
+                        transformed_row[key] = " ".join(
+                            row[col] for col in value if col in row and pd.notna(row[col])
+                        ).strip()
                 else:
                     # Assign a single field if it exists
                     transformed_row[key] = row[value] if value in row and pd.notna(row[value]) else ""
-
+                
             data.append(transformed_row)
 
         app.printing(f"Successfully converted {file_path} to.")
