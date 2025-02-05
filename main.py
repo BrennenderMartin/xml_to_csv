@@ -20,7 +20,7 @@ eightSeater = "8 Seater"
 eightSeaterPossibilities = ["Private Minivan (1-8)"]
 
 saloon = "Saloon"
-saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)", "Vehículo de 4 plazas"]
+saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)", "Vehículo de 4 plazas", "VehÃ­culo de 4 plazas"]
 
 main_folder = "main"
 folder_path = f"{main_folder}\input"
@@ -301,12 +301,15 @@ def create_csv_SUNTR(mapping, root):
                     entry = get_item(value, root)
 
                 # Adjust vehicle type name
-                if key == "vehicle_type_name" and entry in sixSeaterPossibilities:
-                    entry = sixSeater
-                elif key == "vehicle_type_name" and entry in saloonPossibilities:
-                    entry = saloon
-                elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
-                    entry = eightSeater
+                if key == "vehicle_type_name":
+                    if entry in sixSeaterPossibilities:
+                        entry = sixSeater
+                    
+                    elif entry in saloonPossibilities:
+                        entry = saloon
+                    
+                    elif entry in eightSeaterPossibilities:
+                        entry = eightSeater
                 
                 elif key == "ref_number":
                     entry += appendix_ref_number
@@ -334,7 +337,6 @@ def create_csv_SUNTR(mapping, root):
                     else:
                         entry = ""
 
-                
                 row[key] = entry
 
         data.append(row)
@@ -357,12 +359,15 @@ def create_csv_default(mapping, root):
         entry = get_item(value, root)
 
         # Adjust vehicle type name
-        if key == "vehicle_type_name" and entry in sixSeaterPossibilities:
-            entry = sixSeater
-        elif key == "vehicle_type_name" and entry in saloonPossibilities:
-            entry = saloon
-        elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
-            entry = eightSeater
+        if key == "vehicle_type_name":
+            if entry in sixSeaterPossibilities:
+                entry = sixSeater
+            
+            elif entry in saloonPossibilities:
+                entry = saloon
+            
+            elif entry in eightSeaterPossibilities:
+                entry = eightSeater
         
         elif key == "passenger1_name":
             old_entry = entry
@@ -373,17 +378,15 @@ def create_csv_default(mapping, root):
     data.append(row)
 
 def create_csv_cv(file, mapping):
-    """
-    Converts JSON data into a CSV row based on the provided mapping.
+    """ Converts JSON data into a CSV row based on the provided mapping.
 
-    Args:
-        file (str): Path to the JSON file.
-        mapping (dict): Mapping of CSV keys to JSON keys.
+        Args:
+            file (str): Path to the JSON file.
+            mapping (dict): Mapping of CSV keys to JSON keys.
 
-    Returns:
-        None
+        Returns:
+            None
     """
-    print("Creating the .csv from the .json")
     with open(file, "r") as file:
         json_data = json.load(file)
     
@@ -394,30 +397,29 @@ def create_csv_cv(file, mapping):
                 json_data[item] for item in value if item in json_data and json_data[item]
             ).strip()
         
-        elif key == "vehicle_type_name" and entry in sixSeaterPossibilities:
-            entry = sixSeater
-        elif key == "vehicle_type_name" and entry in saloonPossibilities:
-            entry = saloon
-        elif key == "vehicle_type_name" and entry in eightSeaterPossibilities:
-            entry = eightSeater
-        
-        elif key == "dropoff_address":
-            
-            # Extract the destination from the trayecto field
-            trayecto = json_data.get("trayecto", "")  # Get the trayecto field, default to an empty string
-            if " - " in trayecto:
-                destination = trayecto.split(" - ")[1].strip()  # Split by ' - ' and take the second part
-            else:
-                destination = ""  # Default to empty if no separator is found
-
-            entry = destination
+        elif key == "pickup_address" or key == "dropoff_address":
+            entry = json_data.get(value, "Dublin Airport")
         
         else:
             entry = json_data.get(value, "")
+        
+        if key == "vehicle_type_name":
+            if entry in sixSeaterPossibilities:
+                entry = sixSeater
             
-        row[key] = entry  # Add the extracted value to the row
+            elif entry in saloonPossibilities:
+                entry = saloon
+            
+            elif entry in eightSeaterPossibilities:
+                entry = eightSeater
+        
+        elif key == "passenger1_name":
+            old_entry = entry
+            entry = f"CV - {old_entry}"
+        
+        row[key] = entry
     
-    data.append(row)  # Append the row to the global data list
+    data.append(row)
 
 def main():
     """ Main function to process XML files and generate CSVs. 
@@ -450,7 +452,7 @@ def main():
             file_path = os.path.join(folder_path, file_name)
             
             if file_name.endswith(".xml"):
-                app.printing(f"\nProcessing file: {file_name}")
+                app.printing(f"Processing file: {file_name}")
                 # Parse the XML file
                 tree = ET.parse(file_path)
                 root = tree.getroot()
@@ -467,18 +469,9 @@ def main():
                 new_file_path = os.path.join(final_final_folder, file_name)
                 shutil.move(file_path, new_file_path)
                 app.printing(f"Moved file to: {new_file_path}")
-            
-            elif file_name.endswith(".xlsx"):
-                app.printing(f"\nProcessing file: {file_name}")
-                #read_excel(file_path)
-                
-                # Move the processed XML file to the date-named folder
-                new_file_path = os.path.join(final_final_folder, file_name)
-                shutil.move(file_path, new_file_path)
-                app.printing(f"Moved file to: {new_file_path}")
-            
+
             elif file_name.endswith(".json"):
-                app.printing(f"\nProcessing file: {file_name}")
+                app.printing(f"Processing file: {file_name}")
                 create_csv_cv(file_path, mapping_cv)
                 
                 # Move the processed XML file to the date-named folder
@@ -624,7 +617,7 @@ class App(ctk.CTk):
             for file_path in file_paths:
                 self.printing(f"File selected: {file_path}")
                 shutil.copy(file_path, folder_path)
-            self.printing("All files have been moved successfully.")
+            self.printing("All files have been copied successfully.")
     
     def main_process(self):
         """ Triggers the main processing function to convert XML files to CSV and update logs.

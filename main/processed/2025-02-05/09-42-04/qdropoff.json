@@ -1,0 +1,23 @@
+{
+    "jsonType": 1,
+    "id": "2324346",
+    "nombre": "Angel",
+    "apellidos": "Pardo Gomez",
+    "telefono": "(34) 675881266",
+    "trayecto": "Aeropuerto de Dublín - Dublín centro",
+    "ciudadOrigen": "MADRID",
+    "aerolineaNumeroVuelo": "RYANAIR FR494",
+    "hotelPuntoDestino": "Point A Dublin, Parnell Street, Moore Lane, North City, Dublín, Irlanda",
+    "vehiculo": "Vehículo de 4 plazas",
+    "capacidad": "4",
+    "equipajeFacturado": "No",
+    "numViajeros": "2",
+    "tipo": "Privado",
+    "fechaRecogida": "2025-05-06",
+    "horaRecogida": "12:45:00",
+    "fechaReserva": "2025-01-31 18:32:38",
+    "precioTotal": "51.00",
+    "precioNeto": 40.5,
+    "divisa": "EUR",
+    "comentarios": ""
+}
