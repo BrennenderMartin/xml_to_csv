@@ -377,7 +377,7 @@ def create_csv_default(mapping, root):
 
     data.append(row)
 
-def create_csv_cv(file, mapping):
+def create_csv_civitatis(file, mapping):
     """ Converts JSON data into a CSV row based on the provided mapping.
 
         Args:
@@ -472,7 +472,7 @@ def main():
 
             elif file_name.endswith(".json"):
                 app.printing(f"Processing file: {file_name}")
-                create_csv_cv(file_path, mapping_cv)
+                create_csv_civitatis(file_path, mapping_cv)
                 
                 # Move the processed XML file to the date-named folder
                 new_file_path = os.path.join(final_final_folder, file_name)
