@@ -13,6 +13,7 @@ import re
 import json
 
 """ Global variables: """
+# all possibilities for a vehicle, and in what these vehicle names have to be changes into
 sixSeater = "6 Seater"
 sixSeaterPossibilities = ["Private Minivan", "Private Minivan (1-6)", "minivan"]
 
@@ -22,17 +23,20 @@ eightSeaterPossibilities = ["Private Minivan (1-8)"]
 saloon = "Saloon"
 saloonPossibilities = ["Private Transfer", "Private Sedan (1-4)", "Vehículo de 4 plazas", "VehÃ­culo de 4 plazas"]
 
-main_folder = "main"
-folder_path = f"{main_folder}\input"
-output_folder =  f"{main_folder}\output"
-processed_folder = f"{main_folder}\processed"
-folders = [main_folder, folder_path, output_folder, processed_folder]
+# folder paths, that are created and used for everything
+main_folder = "main" # main folder, in which all the other folders are being created
+folder_path = f"{main_folder}\input" # folder, in which you have to put the files into
+output_folder =  f"{main_folder}\output" # folder, where all the output files are going into
+processed_folder = f"{main_folder}\processed" # folder, where the files used for the output are put into, so they are not lost. Also sorted by date
+folders = [main_folder, folder_path, output_folder, processed_folder] # list of all folders
 
-time_format = "%H-%M-%S" #Here: Hour-Minute-Second
-day_format = "%Y-%m-%d" #Here: Year-Month-Day
+time_format = "%H-%M-%S" # Hour-Minute-Second
+day_format = "%Y-%m-%d" # Year-Month-Day
 
+# main list(turns into matrix), which everything is being appended to, so you can convert it into a csv
 data = []
 
+# all mappings for Sun Transfers(SUNTR), My Transfers(default) and Civitatis(cv)
 mapping_SUNTR = {   "pickup_time": "transfers/transfer/origin/pickup_time",
                     "pickup_address": "",
                     "pickup_address_complete": "",
@@ -198,6 +202,7 @@ mapping_cv = {      "pickup_time": ["fechaRecogida", "horaRecogida"],
                     "created_date": ""
 }
 
+# all methods and logic
 def get_item(path, root):
     """ Retrieves a value from an XML element based on the provided path.
 
@@ -215,11 +220,12 @@ def get_item(path, root):
         # Join all found commentary entries into a single string
         return "; ".join(commentary_list) if commentary_list else ""
 
-    if isinstance(path, str):
+    if isinstance(path, str): # gets the values of a single string out of the xml
         element = root.find(path)
         if element is not None and element.text:
             return element.text.strip()
-    elif isinstance(path, list):
+    
+    elif isinstance(path, list): # gets the value of all the objects in the list, as one string (needed for the names)
         return " ".join(
             root.find(p).text.strip() if root.find(p) is not None and root.find(p).text else ""
             for p in path
@@ -247,20 +253,25 @@ def create_csv_SUNTR(mapping, root):
     # Iterate over each transfer
     for transfer in transfers.findall("transfer"):
         row = {}
+        # Iterates through the mapping to get a value fot every key
         for key, value in mapping.items():
-            # Special handling for pickup and dropoff addresses
+            # Special handling for pickup / dropoff address and the child / infant seats
             if key == "pickup_address":
+                # if the origin is a airport it gets the name of the airport,
+                # if the origin is a city it gets the accommodation address of the origin
                 origin = transfer.find("origin")
                 if origin is not None and origin.attrib.get("type") == "airport":
                     row[key] = get_item("name", origin)
-                    appendix_ref_number = "a"
+                    appendix_ref_number = "a" # creates an appendix for the ref_number, airport = a
                 elif origin is not None and origin.attrib.get("type") == "city":
                     row[key] = get_item("accommodation/address", transfer.find("origin"))
-                    appendix_ref_number = "b"
+                    appendix_ref_number = "b" # creates an appendix for the ref_number, city = b
                 else:
                     row[key] = ""
             
             elif key == "dropoff_address":
+                # if the destination is a airport it gets the name of the airport,
+                # if the destination is a city it gets the accommodation address of the destination
                 destination = transfer.find("destination")
                 if destination is not None and destination.attrib.get("type") == "airport":
                     row[key] = get_item("name", destination)
@@ -270,6 +281,8 @@ def create_csv_SUNTR(mapping, root):
                     row[key] = ""
 
             elif key == "child_seat_count":
+                # checks for extras and if there are any it checks fot child / infant seats
+                # if there are any it appends them to the csv
                 extras = transfer.find("extras")
                 child_seat_count = 0
                 if extras is not None:
@@ -282,6 +295,8 @@ def create_csv_SUNTR(mapping, root):
                 row[key] = str(child_seat_count)
 
             elif key == "infant_seat_count":
+                # checks for extras and if there are any it checks fot child / infant seats
+                # if there are any it appends them to the csv
                 extras = transfer.find("extras")
                 infant_seat_count = 0
                 if extras is not None:
@@ -311,13 +326,16 @@ def create_csv_SUNTR(mapping, root):
                     elif entry in eightSeaterPossibilities:
                         entry = eightSeater
                 
+                # Adds the reference number gotten from the origin
                 elif key == "ref_number":
                     entry += appendix_ref_number
                 
+                # Adds the Prefix to the passengers name
                 elif key == "passenger1_name":
                     old_entry = entry
                     entry = f"ST - {old_entry}"
                 
+                # Adds the prefix of the flight number
                 elif key == "pickup_flight_number":
                     flight_number = get_item("flight/flight_number", transfer.find("origin"))
                     airline = get_item("flight/airline", transfer.find("origin"))
@@ -337,8 +355,10 @@ def create_csv_SUNTR(mapping, root):
                     else:
                         entry = ""
 
+                # Default adding of the items to the list, if there is nothing, that has to be changed
                 row[key] = entry
 
+        # Adds the created row to the data, which is getting converted into the csv
         data.append(row)
 
 def create_csv_default(mapping, root):
@@ -353,9 +373,10 @@ def create_csv_default(mapping, root):
         Returns:
             None
     """
-    # Iterate over each transfer
     row = {}
+    # Iterates through the mapping to get a value fot every key
     for key, value in mapping.items():
+        # Gets the data from the xml file
         entry = get_item(value, root)
 
         # Adjust vehicle type name
@@ -369,12 +390,15 @@ def create_csv_default(mapping, root):
             elif entry in eightSeaterPossibilities:
                 entry = eightSeater
         
+        # Adds the Prefix to the passengers name
         elif key == "passenger1_name":
             old_entry = entry
             entry = f"MT - {old_entry}"
         
+        # Default adding of the items to the list, if there is nothing, that has to be changed
         row[key] = entry
 
+    # Adds the created row to the data, which is getting converted into the csv
     data.append(row)
 
 def create_csv_civitatis(file, mapping):
@@ -387,22 +411,27 @@ def create_csv_civitatis(file, mapping):
         Returns:
             None
     """
+    # Opens the json file
     with open(file, "r") as file:
         json_data = json.load(file)
     
     row = {}
+    # Iterates through the mapping to get a value fot every key
     for key, value in mapping.items():
         if isinstance(value, list):  # Handle multi-field mappings
             entry = " ".join(
                 json_data[item] for item in value if item in json_data and json_data[item]
             ).strip()
         
+        # Gets the data of pickup and the dropoff, Defaults to the Airport, if none of it is being found
         elif key == "pickup_address" or key == "dropoff_address":
             entry = json_data.get(value, "Dublin Airport")
         
+        # Default behaviour to get the data from the json, defaults to and empty string
         else:
             entry = json_data.get(value, "")
         
+        # Adjust vehicle type name
         if key == "vehicle_type_name":
             if entry in sixSeaterPossibilities:
                 entry = sixSeater
@@ -413,14 +442,18 @@ def create_csv_civitatis(file, mapping):
             elif entry in eightSeaterPossibilities:
                 entry = eightSeater
         
+        # Adds the Prefix to the passengers name
         elif key == "passenger1_name":
             old_entry = entry
             entry = f"CV - {old_entry}"
         
+        # Default adding of the items to the list, if there is nothing, that has to be changed
         row[key] = entry
-    
+
+    # Adds the created row to the data, which is getting converted into the csv
     data.append(row)
 
+# Main method if you want to convert the files
 def main():
     """ Main function to process XML files and generate CSVs. 
         It organizes processed files into dated folders and 
@@ -432,13 +465,14 @@ def main():
         Returns:
             None
     """
-    day = datetime.now().strftime(day_format)
-    time = datetime.now().strftime(time_format)
-    date = f"{day}_{time}"
+    day = datetime.now().strftime(day_format) # Gets the day
+    time = datetime.now().strftime(time_format) # Gets the time
+    date = f"{day}_{time}" # Creates the appendix for the output
     
-    if not os.listdir(folder_path):
-        app.printing("There are no xml files to be processed")
-    else:
+    if not os.listdir(folder_path): # Checks if there are any files to be processed
+        app.printing("There are no files to be processed")
+    else: # When there are files in the input folder
+        #Creates the input, output and processed folders
         final_folder = os.path.join(processed_folder, day)
         os.makedirs(final_folder, exist_ok=True) 
         
@@ -447,32 +481,36 @@ def main():
         
         output_output_folder = os.path.join(output_folder, day)
         os.makedirs(output_output_folder, exist_ok=True) 
+        
         # Iterate over all files in the folder
         for file_name in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, file_name)
+            file_path = os.path.join(folder_path, file_name) # Creates the whole file path
             
-            if file_name.endswith(".xml"):
+            if file_name.endswith(".xml"): # Logic for xml files
                 app.printing(f"Processing file: {file_name}")
                 # Parse the XML file
                 tree = ET.parse(file_path)
                 root = tree.getroot()
-
+                
+                # Checks for the SUNTR reference, 
+                # if it is found, use the SUNTR logic,
+                # if it is not found, use the My Transfers logic
                 reference = root.find("reference")
                 if reference is not None and "SUNTR" in reference.text:
                     app.printing(f"The reference contains SUNTR in {file_name}.")
-                    create_csv_SUNTR(mapping_SUNTR, root)
+                    create_csv_SUNTR(mapping_SUNTR, root) # logic for SUNTR
                 else:
                     app.printing(f"The reference does not contain SUNTR in {file_name}. Found: {reference.text if reference is not None else 'None'}")
-                    create_csv_default(mapping_default, root)            
+                    create_csv_default(mapping_default, root) # logic for My Transfers
                 
                 # Move the processed XML file to the date-named folder
                 new_file_path = os.path.join(final_final_folder, file_name)
                 shutil.move(file_path, new_file_path)
                 app.printing(f"Moved file to: {new_file_path}")
 
-            elif file_name.endswith(".json"):
+            elif file_name.endswith(".json"): # Logic for json files
                 app.printing(f"Processing file: {file_name}")
-                create_csv_civitatis(file_path, mapping_cv)
+                create_csv_civitatis(file_path, mapping_cv) # logic for json files
                 
                 # Move the processed XML file to the date-named folder
                 new_file_path = os.path.join(final_final_folder, file_name)
@@ -480,11 +518,13 @@ def main():
                 app.printing(f"Moved file to: {new_file_path}")
             
             else:
-                app.printing(f"Skipping non-XML or xlsx file: {file_name}")
+                app.printing(f"Skipping non-XML or json file: {file_name}")
         
+        # Creates a pandas DataFrame from the data, which everything has been appendes to 
         df = pd.DataFrame(data, dtype=object)
-        df.to_csv(f"{output_output_folder}/output_{date}.csv", sep=";", index=False, quoting=3)
+        df.to_csv(f"{output_output_folder}/output_{date}.csv", sep=";", index=False, quoting=3) # Creates a csv file from the DataFrame
 
+# Main class created with customtkinter, that creates a GUI
 class App(ctk.CTk):
     """ GUI application for converting XML files to CSV format.
 
@@ -497,24 +537,28 @@ class App(ctk.CTk):
         """ Initializes the application window and sets up the layout and widgets. """
         super().__init__()
 
-        self.title("Convert xmls and xlsxs to one csv")
-        self.geometry("750x300")
+        self.title("Convert xmls and jsons to one csv") # Title
+        self.geometry("750x300") # Geometry
         
+        # Configuration, that the widgets behave how they are supposed to
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
+        # Creates a Frame (Sidebar), where all the buttons are
         self.navigation_frame = ctk.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(4, weight=1)
         
+        # Label on the top of the sidebar, and config in grid
         self.navigation_frame_label = ctk.CTkLabel(
             self.navigation_frame, 
-            text="Image Example", 
+            text="XML to CSV", 
             compound="left", 
             font=ctk.CTkFont(size=15, weight="bold")
         )
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
         
+        # Select Files button on the sidebar, and config in grid
         self.select_button = ctk.CTkButton(
             self.navigation_frame,
             corner_radius=0,
@@ -529,6 +573,7 @@ class App(ctk.CTk):
         )
         self.select_button.grid(row=1, column=0, sticky="ew")
         
+        # Convert button on the sidebar, and config in grid
         self.action_button = ctk.CTkButton(
             self.navigation_frame, 
             corner_radius=0,
@@ -543,6 +588,7 @@ class App(ctk.CTk):
         )
         self.action_button.grid(row=2, column=0, sticky="ew")
         
+        # Open Output button on the sidebar, and config in grid
         self.output_button = ctk.CTkButton(
             self.navigation_frame,
             corner_radius=0,
@@ -557,6 +603,7 @@ class App(ctk.CTk):
         )
         self.output_button.grid(row=3, column=0, sticky="ew")
         
+        # Option Menu to change appearence mode on the sidebar, and config in grid
         self.appearance_mode_menu = ctk.CTkOptionMenu(
             self.navigation_frame, 
             values=["Light", "Dark", "System"],
@@ -568,27 +615,14 @@ class App(ctk.CTk):
         self.home_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
         self.home_frame.grid_rowconfigure(0, weight=1)
+        self.home_frame.grid(row=0, column=1, sticky="nsew")
         
+        # Creates Textbox, that acts as console in the home frame
         self.textbox = ctk.CTkTextbox(self.home_frame, corner_radius=0)
         self.textbox.grid(row=0, column=0, padx=20, pady=10, sticky="nsew")
         
-        self.select_frame_by_name("home")
+        # Shows a message, that explains the program in the console
         self.show_intro()
-
-    def select_frame_by_name(self, name):
-        """ Displays the specified frame by name.
-
-            Args:
-                name (str): Name of the frame to display.
-
-            Returns:
-                None
-        """
-        # show selected frame
-        if name == "home":
-            self.home_frame.grid(row=0, column=1, sticky="nsew")
-        else:
-            self.home_frame.grid_forget()
 
     def change_appearance_mode_event(self, new_appearance_mode):
         """ Changes the appearance mode of the application.
@@ -613,7 +647,7 @@ class App(ctk.CTk):
             title="Select Files",
             filetypes=(("All Files", "*.*"),)
         )
-        if file_paths:
+        if file_paths: # Copies the selected files into the input folder
             for file_path in file_paths:
                 self.printing(f"File selected: {file_path}")
                 shutil.copy(file_path, folder_path)
@@ -631,6 +665,7 @@ class App(ctk.CTk):
 
     def open_output(self, event=None):
         """ Opens the output folder in the file explorer.
+            Only works on Windows, not on MAC!!!!
 
             Args:
                 event (optional): Event object from a button click.
@@ -643,30 +678,6 @@ class App(ctk.CTk):
                 os.startfile(f"{output_folder}")
         except Exception as e:
             self.printing(f"Error opening output folder: {e}")
-
-    def remove(self):
-        """ Removes the most recently added file from the input folder.
-
-            Returns:
-                None
-        """
-        try:
-            # Get a list of all files in the input folder
-            files = [os.path.join(folder_path, f) for f in os.listdir(folder_path)]
-            
-            # Check if the folder is empty
-            if not files:
-                self.printing("The input folder is empty. No files to remove.")
-                return
-
-            # Find the most recently modified file
-            latest_file = max(files, key=os.path.getmtime)
-
-            # Delete the file
-            os.remove(latest_file)
-            self.printing(f"Removed the latest file: {os.path.basename(latest_file)}")
-        except Exception as e:
-            self.printing(f"Error removing the latest file: {e}")
 
     def show_intro(self):
         """ Displays an introduction message in the application textbox, guiding the user
@@ -690,7 +701,7 @@ class App(ctk.CTk):
         self.printing(intro_message)
 
     def printing(self, text):
-        """ Prints messages to both the console and the GUI's output textbox.
+        """ Prints messages to the GUI's output textbox.
 
             Args:
                 text (str): Message to display.
@@ -698,11 +709,10 @@ class App(ctk.CTk):
             Returns:
                 None
         """
-        #print(text)
-        self.textbox.configure(state="normal")
+        self.textbox.configure(state="normal") # Lets you write text in the textbox
         self.textbox.insert("end", f"{text}\n")
         self.textbox.see("end")
-        self.textbox.configure(state="disabled")
+        self.textbox.configure(state="disabled")# doesnt let you write text in the textbox
 
 if __name__ == "__main__":
     """ Entry point of the program. Sets up required folders and starts the GUI. """
